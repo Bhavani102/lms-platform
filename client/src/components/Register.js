@@ -5,19 +5,22 @@ import Container from '@mui/material/Container';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import { useNavigate } from 'react-router-dom';
-
+import Box from '@mui/material/Box';
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('student'); // Default to 'student'
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       // Send user data to backend for registration
-      await axios.post('http://localhost:5000/api/auth/register', { name, email, password });
+      await axios.post('http://localhost:5000/api/auth/register', { name, email, password, role });
       alert('Registration successful! Please log in.');
       
       // Redirect to Login page after successful registration
@@ -59,9 +62,23 @@ const Register = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
+        
+        {/* Role Selection Dropdown */}
+        <Select
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+          fullWidth
+          margin="normal"
+          variant="outlined"
+        >
+          <MenuItem value="student">Student</MenuItem>
+          <MenuItem value="admin">Admin</MenuItem>
+        </Select>
+        <Box mt={2}>
         <Button type="submit" variant="contained" color="primary" fullWidth>
           Register
         </Button>
+        </Box>
       </form>
     </Container>
   );

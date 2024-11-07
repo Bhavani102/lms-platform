@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -8,7 +8,12 @@ import Button from '@mui/material/Button';
 
 const Navbar = () => {
   const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
+  const handleLogout = () => {
+    logout(); // Call logout from context
+    navigate('/login'); // Redirect to login page after logout
+  };
   return (
     <AppBar position="static">
       <Toolbar>
@@ -28,7 +33,7 @@ const Navbar = () => {
                 Create Course
               </Button>
             )}
-            <Button color="inherit" onClick={logout}>
+            <Button color="inherit" onClick={handleLogout}>
               Logout
             </Button>
           </>

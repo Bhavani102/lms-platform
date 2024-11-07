@@ -7,7 +7,6 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  // Function to set the token and manage axios headers
   const setAuthToken = (token) => {
     if (token) {
       localStorage.setItem('authToken', token);
@@ -18,30 +17,26 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Login function to authenticate and fetch user data
-  const login = async (email, password) => {
+  const login = async (email, password, role) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+      const response = await axios.post('http://localhost:5000/api/auth/login', { email, password, role });
       const { token, user } = response.data;
-      
-      // Set token and user data
+
       setAuthToken(token);
       setUser(user);
 
-      return true;
+      return user.role; // Return user's role for role-based navigation
     } catch (error) {
       console.error('Login error:', error);
       throw new Error('Invalid login credentials');
     }
   };
 
-  // Logout function to clear token and user data
   const logout = () => {
     setAuthToken(null);
     setUser(null);
   };
 
-  // Check for existing token on mount and fetch user data
   useEffect(() => {
     const token = localStorage.getItem('authToken');
     if (token) {

@@ -9,6 +9,8 @@ import TakeQuiz from './components/TakeQuiz';
 import QuizResults from './components/QuizResults';
 import AdminDashboard from './components/AdminDashboard';
 import Register from './components/Register';
+import StudentDashboard from './components/StudentDashboard';
+
 function App() {
   return (
     <AuthProvider>
@@ -21,7 +23,8 @@ function App() {
           <Route path="/courses" element={<CourseList />} />
           <Route path="/courses/:courseId/quiz" element={<TakeQuiz />} />
           <Route path="/courses/:courseId/results" element={<QuizResults />} />
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/student-dashboard" element={<StudentDashboard />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
         </Routes>
       </Router>
     </AuthProvider>
