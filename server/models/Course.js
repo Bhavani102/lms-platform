@@ -1,7 +1,8 @@
+// server/models/Course.js
 const mongoose = require('mongoose');
 
-const CourseSchema = new mongoose.Schema({
-  title: {
+const courseSchema = new mongoose.Schema({
+  name: {
     type: String,
     required: true,
   },
@@ -10,22 +11,15 @@ const CourseSchema = new mongoose.Schema({
     required: true,
   },
   instructor: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
     required: true,
   },
-  lessons: [
-    {
-      title: String,
-      content: String,
-    }
-  ],
   students: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-    }
+      ref: 'User', // Reference to User model for enrolled students
+    },
   ],
-}, { timestamps: true });
+});
 
-module.exports = mongoose.model('Course', CourseSchema);
+module.exports = mongoose.model('Course', courseSchema);

@@ -1,86 +1,108 @@
-import React, { useState, useEffect, useContext } from 'react';
-import axios from 'axios';
-import AuthContext from '../context/AuthContext';
+import React from 'react';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
+import Grid from '@mui/material/Grid';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardActionArea from '@mui/material/CardActionArea';
+import { Box } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+
+// Icon imports
+import SchoolIcon from '@mui/icons-material/School';
+import PeopleIcon from '@mui/icons-material/People';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 const AdminDashboard = () => {
-  const { user } = useContext(AuthContext);
-  const [users, setUsers] = useState([]);
-  const [courses, setCourses] = useState([]);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchAdminData = async () => {
-      if (user && user.role === 'admin') {
-        const token = localStorage.getItem('authToken');
-        try {
-          const [usersRes, coursesRes] = await Promise.all([
-            axios.get('/api/admin/users', { headers: { Authorization: `Bearer ${token}` } }),
-            axios.get('/api/admin/courses', { headers: { Authorization: `Bearer ${token}` } }),
-          ]);
-          setUsers(usersRes.data);
-          setCourses(coursesRes.data);
-        } catch (error) {
-          console.error('Error fetching admin data', error);
-        }
-      }
-    };
-    fetchAdminData();
-  }, [user]);
+  const handleNavigation = (path) => {
+    navigate(path);
+  };
 
   return (
-    <Container>
+    <Container maxWidth="lg">
       <Typography variant="h4" component="h1" gutterBottom>
         Admin Dashboard
       </Typography>
-      <Typography variant="h5" component="h2" gutterBottom>
-        Users
-      </Typography>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Email</TableCell>
-            <TableCell>Role</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {users.map((user) => (
-            <TableRow key={user._id}>
-              <TableCell>{user.name}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>{user.role}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+      <Grid container spacing={3}>
+        {/* Card 1: Course Creation */}
+        <Grid item xs={12} sm={6} md={3}>
+          <Card onClick={() => handleNavigation('/create-course')}>
+            <CardActionArea>
+              <CardContent>
+                <Box display="flex" flexDirection="column" alignItems="center">
+                  <SchoolIcon fontSize="large" color="primary" />
+                  <Typography variant="h6" component="div" align="center" gutterBottom>
+                    Course Creation
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" align="center">
+                    Create and manage courses.
+                  </Typography>
+                </Box>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Grid>
 
-      <Typography variant="h5" component="h2" gutterBottom>
-        Courses
-      </Typography>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Title</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell>Instructor</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {courses.map((course) => (
-            <TableRow key={course._id}>
-              <TableCell>{course.title}</TableCell>
-              <TableCell>{course.description}</TableCell>
-              <TableCell>{course.instructor.name}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+        {/* Card 2: User Management */}
+        <Grid item xs={12} sm={6} md={3}>
+          <Card onClick={() => handleNavigation('/user-management')}>
+            <CardActionArea>
+              <CardContent>
+                <Box display="flex" flexDirection="column" alignItems="center">
+                  <PeopleIcon fontSize="large" color="primary" />
+                  <Typography variant="h6" component="div" align="center" gutterBottom>
+                    User Management
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" align="center">
+                    Manage users and permissions.
+                  </Typography>
+                </Box>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Grid>
+
+        {/* Card 3: Reports */}
+        <Grid item xs={12} sm={6} md={3}>
+          <Card onClick={() => handleNavigation('/reports')}>
+            <CardActionArea>
+              <CardContent>
+                <Box display="flex" flexDirection="column" alignItems="center">
+                  <AssessmentIcon fontSize="large" color="primary" />
+                  <Typography variant="h6" component="div" align="center" gutterBottom>
+                    Reports
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" align="center">
+                    View detailed reports and insights.
+                  </Typography>
+                </Box>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Grid>
+
+        {/* Card 4: Settings */}
+        <Grid item xs={12} sm={6} md={3}>
+          <Card onClick={() => handleNavigation('/settings')}>
+            <CardActionArea>
+              <CardContent>
+                <Box display="flex" flexDirection="column" alignItems="center">
+                  <SettingsIcon fontSize="large" color="primary" />
+                  <Typography variant="h6" component="div" align="center" gutterBottom>
+                    Settings
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" align="center">
+                    Adjust application settings.
+                  </Typography>
+                </Box>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Grid>
+      </Grid>
     </Container>
   );
 };

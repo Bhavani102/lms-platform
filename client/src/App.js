@@ -3,14 +3,14 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Login from './components/Login';
-import CreateCourse from './components/CreateCourse';
+import CreateCourse from './components/CourseCreation';
 import CourseList from './components/CourseList';
 import TakeQuiz from './components/TakeQuiz';
 import QuizResults from './components/QuizResults';
 import AdminDashboard from './components/AdminDashboard';
 import Register from './components/Register';
 import StudentDashboard from './components/StudentDashboard';
-
+import CourseEnrollment from './components/CourseEnrollment';
 function App() {
   return (
     <AuthProvider>
@@ -25,6 +25,7 @@ function App() {
           <Route path="/courses/:courseId/results" element={<QuizResults />} />
           <Route path="/student-dashboard" element={<StudentDashboard />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
+          <Route path="/course-enrollment" element={<CourseEnrollment />} />
         </Routes>
       </Router>
     </AuthProvider>
