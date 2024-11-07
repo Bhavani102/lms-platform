@@ -2,22 +2,14 @@
 const mongoose = require('mongoose');
 
 const courseSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  description: {
-    type: String,
-    required: true,
-  },
-  instructor: {
-    type: String,
-    required: true,
-  },
-  students: [
+  name: { type: String, required: true },
+  description: { type: String, required: true },
+  instructor: { type: String, required: true },
+  students: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  content: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User', // Reference to User model for enrolled students
+      type: { type: String, required: true },
+      content: { type: String, required: true },
     },
   ],
 });

@@ -11,6 +11,8 @@ import AdminDashboard from './components/AdminDashboard';
 import Register from './components/Register';
 import StudentDashboard from './components/StudentDashboard';
 import CourseEnrollment from './components/CourseEnrollment';
+import ManageCourses from './components/ManageCourses';
+import MyCourses from './components/MyCourses';
 function App() {
   return (
     <AuthProvider>
@@ -26,6 +28,8 @@ function App() {
           <Route path="/student-dashboard" element={<StudentDashboard />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/course-enrollment" element={<CourseEnrollment />} />
+          <Route path="/manage-courses" element={<ManageCourses />} />
+          <Route path="/my-courses" element={<MyCourses />} />
         </Routes>
       </Router>
     </AuthProvider>

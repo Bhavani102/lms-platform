@@ -5,6 +5,7 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const authRoutes = require('./routes/authRoutes');
 const courseRoutes = require('./routes/courseRoutes');
+const path = require('path');
 
 dotenv.config();
 const app = express();
@@ -15,7 +16,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow these HTTP methods
   allowedHeaders: ['Content-Type', 'Authorization'], // Allow these headers
 }));
-
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Middleware for JSON parsing
 app.use(express.json());
 

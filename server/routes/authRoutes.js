@@ -75,4 +75,35 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Get courses created by admin
+router.get('/all', async (req, res) => {
+  try {
+    const courses = await Course.find();
+    res.status(200).json(courses);
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    res.status(500).json({ message: 'Server error fetching courses' });
+  }
+});
+
+// Endpoint to add content to a course
+router.post('/:courseId/content', async (req, res) => {
+  try {
+    const { type, content } = req.body; // type: 'pdf', 'video', etc.
+    const course = await Course.findById(req.params.courseId);
+
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+
+    course.content.push({ type, content });
+    await course.save();
+
+    res.status(200).json({ message: 'Content added successfully' });
+  } catch (error) {
+    console.error('Error adding content:', error);
+    res.status(500).json({ message: 'Server error adding content' });
+  }
+});
+
 module.exports = router;

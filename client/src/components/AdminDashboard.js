@@ -7,7 +7,7 @@ import CardContent from '@mui/material/CardContent';
 import CardActionArea from '@mui/material/CardActionArea';
 import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-
+import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 // Icon imports
 import SchoolIcon from '@mui/icons-material/School';
 import PeopleIcon from '@mui/icons-material/People';
@@ -102,7 +102,25 @@ const AdminDashboard = () => {
             </CardActionArea>
           </Card>
         </Grid>
-      </Grid>
+     
+      <Grid item xs={12} sm={6} md={3}>
+          <Card onClick={() => handleNavigation('/manage-courses')}>
+            <CardActionArea>
+              <CardContent>
+                <Box display="flex" flexDirection="column" alignItems="center">
+                  <ContentPasteIcon fontSize="large" color="primary" />
+                  <Typography variant="h6" component="div" align="center" gutterBottom>
+                    Manage Courses
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" align="center">
+                    View and add content to your courses.
+                  </Typography>
+                </Box>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Grid>
+        </Grid>
     </Container>
   );
 };
