@@ -13,6 +13,7 @@ import StudentDashboard from './components/StudentDashboard';
 import CourseEnrollment from './components/CourseEnrollment';
 import ManageCourses from './components/ManageCourses';
 import MyCourses from './components/MyCourses';
+import CourseContent from './components/CourseContent';
 function App() {
   return (
     <AuthProvider>
@@ -30,6 +31,7 @@ function App() {
           <Route path="/course-enrollment" element={<CourseEnrollment />} />
           <Route path="/manage-courses" element={<ManageCourses />} />
           <Route path="/my-courses" element={<MyCourses />} />
+          <Route path="/courses/:courseName/content" element={<CourseContent />} />
         </Routes>
       </Router>
     </AuthProvider>

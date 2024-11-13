@@ -125,3 +125,24 @@ router.get('/:courseName/content', async (req, res) => {
 
 
 module.exports = router;
+
+// server/routes/courseRoutes.js
+
+// Endpoint to fetch courses and content for an enrolled student
+router.get('/student/:studentEmail/enrolled-content', async (req, res) => {
+  try {
+    const studentEmail = req.params.studentEmail;
+
+    // Find all courses where the student is enrolled and populate content
+    const enrolledCourses = await Course.find({ students: studentEmail }).select('name description content');
+
+    if (!enrolledCourses.length) {
+      return res.status(404).json({ message: 'No enrolled courses found for this student.' });
+    }
+
+    res.status(200).json(enrolledCourses);
+  } catch (error) {
+    console.error('Error fetching enrolled courses with content:', error);
+    res.status(500).json({ message: 'Server error fetching courses' });
+  }
+});

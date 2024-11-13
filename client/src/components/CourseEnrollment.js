@@ -7,11 +7,12 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import { useAuthContext } from '../context/AuthContext'; // Import AuthContext
 
 const CourseEnrollment = () => {
   const [availableCourses, setAvailableCourses] = useState([]);
+  const { user } = useAuthContext(); // Access user information from AuthContext
 
-  // Fetch available courses on component mount
   useEffect(() => {
     const fetchAvailableCourses = async () => {
       try {
@@ -21,19 +22,22 @@ const CourseEnrollment = () => {
         console.error('Error fetching available courses:', error);
       }
     };
-
     fetchAvailableCourses();
   }, []);
 
-  const handleEnroll = async (courseId) => {
+  const handleEnroll = async (courseName) => {
     try {
-      // Placeholder action; replace this with actual enrollment logic when needed
-      alert(`Enrolled in course with ID: ${courseId}`);
+      const response = await axios.post('http://localhost:5000/api/enrollments', {
+        studentEmail: user.email,  // Use user.email from context
+        courseName,
+      });
+      alert(response.data.message);
     } catch (error) {
       console.error('Error enrolling in course:', error);
       alert('Failed to enroll in course');
     }
   };
+  
 
   return (
     <Container maxWidth="lg">
@@ -42,7 +46,7 @@ const CourseEnrollment = () => {
       </Typography>
       <Grid container spacing={3}>
         {availableCourses.length > 0 ? (
-          availableCourses.map(course => (
+          availableCourses.map((course) => (
             <Grid item xs={12} sm={6} md={4} key={course._id}>
               <Card>
                 <CardContent>
@@ -55,7 +59,7 @@ const CourseEnrollment = () => {
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={() => handleEnroll(course._id)}
+                    onClick={() => handleEnroll(course.name)}
                     style={{ marginTop: '1rem' }}
                   >
                     Enroll
