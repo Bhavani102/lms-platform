@@ -49,7 +49,7 @@ const StudentDashboard = () => {
 
         {/* Card 2: Assignments */}
         <Grid item xs={12} sm={6} md={3}>
-          <Card onClick={() => handleNavigation('/assignments')}>
+          <Card onClick={() => handleNavigation('/student-assignments')}>
             <CardActionArea>
               <CardContent>
                 <Box display="flex" flexDirection="column" alignItems="center">

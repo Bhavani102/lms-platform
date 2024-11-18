@@ -14,6 +14,8 @@ import CourseEnrollment from './components/CourseEnrollment';
 import ManageCourses from './components/ManageCourses';
 import MyCourses from './components/MyCourses';
 import CourseContent from './components/CourseContent';
+import StudentAssignments from './components/StudentAssignments';
+import AdminAssignments from './components/AdminAssignment';
 function App() {
   return (
     <AuthProvider>
@@ -32,6 +34,8 @@ function App() {
           <Route path="/manage-courses" element={<ManageCourses />} />
           <Route path="/my-courses" element={<MyCourses />} />
           <Route path="/courses/:courseName/content" element={<CourseContent />} />
+          <Route path="/student-assignments" element={<StudentAssignments />} />
+          <Route path="/admin-assignments" element={<AdminAssignments />} />
         </Routes>
       </Router>
     </AuthProvider>

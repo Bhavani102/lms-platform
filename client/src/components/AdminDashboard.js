@@ -13,7 +13,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import SettingsIcon from '@mui/icons-material/Settings';
-
+import AssignmentIcon from '@mui/icons-material/Assignment';
 const AdminDashboard = () => {
   const navigate = useNavigate();
 
@@ -45,7 +45,24 @@ const AdminDashboard = () => {
             </CardActionArea>
           </Card>
         </Grid>
-
+        {/* Card 2: Assignments */}
+        <Grid item xs={12} sm={6} md={3}>
+          <Card onClick={() => handleNavigation('/admin-assignments')}>
+            <CardActionArea>
+              <CardContent>
+                <Box display="flex" flexDirection="column" alignItems="center">
+                  <AssignmentIcon fontSize="large" color="primary" />
+                  <Typography variant="h6" component="div" align="center" gutterBottom>
+                    Assignments
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" align="center">
+                    View and submit assignments.
+                  </Typography>
+                </Box>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Grid>
         {/* Card 2: User Management */}
         <Grid item xs={12} sm={6} md={3}>
           <Card onClick={() => handleNavigation('/user-management')}>
