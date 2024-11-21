@@ -33,12 +33,22 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log('MongoDB connected'))
 .catch(err => console.error('MongoDB connection error:', err));
 
-// Routes
-app.use('/api/auth', authRoutes); // Authentication routes
-app.use('/api/courses', courseRoutes); // Course-related routes
-app.use('/api/enrollments', enrollmentRoutes);
+console.log("Loading routes...");
+try {
+  app.use('/api/auth', authRoutes);
+  console.log("Auth routes loaded successfully");
+  
+  app.use('/api/courses', courseRoutes);
+  console.log("Course routes loaded successfully");
 
-app.use('/api/assignments', assignmentRoutes);
+  app.use('/api/enrollments', enrollmentRoutes);
+  console.log("Enrollment routes loaded successfully");
+
+  app.use('/api/assignments', assignmentRoutes);
+  console.log("Assignment routes loaded successfully");
+} catch (error) {
+  console.error("Error loading routes:", error.message);
+}
 
 // Start the server
 const PORT = process.env.PORT || 5000;

@@ -1,12 +1,20 @@
-// server/models/Assignment.js
 const mongoose = require('mongoose');
 
 const assignmentSchema = new mongoose.Schema({
   courseName: { type: String, required: true },
-  assignmentText: { type: String, required: false },
+  assignmentText: { type: String },
+  assignmentFile: { type: String },
   postedBy: { type: String, required: true },
-  assignmentFile: { type: String, required: false }, // Path to uploaded file
-  postedDate: { type: Date, default: Date.now },
+  deadline: { type: Date, required: true },
+  submissions: [
+    {
+      studentEmail: { type: String, required: true },
+      submittedText: { type: String },
+      submittedFile: { type: String },
+      submittedAt: { type: Date, default: Date.now },
+    },
+  ],
 });
 
-module.exports = mongoose.model('Assignment', assignmentSchema);
+const Assignment = mongoose.model('Assignment', assignmentSchema);
+module.exports = Assignment;
