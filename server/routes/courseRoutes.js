@@ -6,12 +6,16 @@ const router = express.Router();
 // server/routes/courseRoutes.js
 const multer = require('multer');
 const path = require('path');
-// Create a new course (Admin only)
-router.post('/create', async (req, res) => {
-  const { name, description, instructor } = req.body;
+const authenticate = require('../middleware/authenticate');
+router.post('/create', authenticate, async (req, res) => {
+  const { name, description } = req.body;
 
   try {
-    const course = new Course({ name, description, instructor });
+    const course = new Course({
+      name,
+      description,
+      instructor: req.user.name, // Automatically set instructor to logged-in user
+    });
     await course.save();
     res.status(201).json(course);
   } catch (error) {
@@ -19,6 +23,7 @@ router.post('/create', async (req, res) => {
     res.status(500).json({ message: 'Server error creating course' });
   }
 });
+
 
 // Enroll in a course (Student only)
 router.post('/enroll', async (req, res) => {
@@ -144,5 +149,18 @@ router.get('/student/:studentEmail/enrolled-content', async (req, res) => {
   } catch (error) {
     console.error('Error fetching enrolled courses with content:', error);
     res.status(500).json({ message: 'Server error fetching courses' });
+  }
+});
+
+router.get('/admin-courses', authenticate, async (req, res) => {
+  try {
+    const adminName = req.user.name; // Ensure 'name' exists in req.user
+
+    const courses = await Course.find({ instructor: adminName });
+
+    res.status(200).json(courses);
+  } catch (error) {
+    console.error('Error fetching admin courses:', error);
+    res.status(500).json({ message: 'Server error fetching admin courses' });
   }
 });

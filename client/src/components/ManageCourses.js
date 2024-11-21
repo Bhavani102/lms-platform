@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
@@ -18,13 +17,17 @@ const ManageCourses = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/courses');
+        const response = await axios.get('http://localhost:5000/api/courses/admin-courses', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('authToken')}`, // Token from localStorage
+          },
+        });
         setCourses(response.data);
       } catch (error) {
         console.error('Error fetching courses:', error);
       }
     };
-
+  
     fetchCourses();
   }, []);
 
@@ -34,9 +37,9 @@ const ManageCourses = () => {
     if (contentType === 'pdf' && pdfFile) {
       formData.append('pdfFile', pdfFile);
     }
-  
+
     try {
-      const response = await axios.post(`http://localhost:5000/api/courses/${courseName}/content`, formData, {
+      await axios.post(`http://localhost:5000/api/courses/${courseName}/content`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       alert('Content added successfully!');
@@ -46,12 +49,11 @@ const ManageCourses = () => {
       alert('Failed to add content. Please try again.');
     }
   };
-  
 
   return (
     <Container maxWidth="lg">
       <Typography variant="h4" gutterBottom>
-        Manage All Courses
+        Manage Your Courses
       </Typography>
       <Grid container spacing={3}>
         {courses.length > 0 ? (
@@ -76,7 +78,6 @@ const ManageCourses = () => {
                     value={contentType}
                     onChange={(e) => setContentType(e.target.value)}
                     fullWidth
-                    margin="normal"
                     variant="outlined"
                   >
                     <MenuItem value="pdf">PDF</MenuItem>
