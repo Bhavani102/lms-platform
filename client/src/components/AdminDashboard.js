@@ -119,8 +119,9 @@ const AdminDashboard = () => {
             </CardActionArea>
           </Card>
         </Grid>
-     
-      <Grid item xs={12} sm={6} md={3}>
+        
+        {/* Card 5: Manage Courses */}
+        <Grid item xs={12} sm={6} md={3}>
           <Card onClick={() => handleNavigation('/manage-courses')}>
             <CardActionArea>
               <CardContent>
@@ -130,14 +131,14 @@ const AdminDashboard = () => {
                     Manage Courses
                   </Typography>
                   <Typography variant="body2" color="textSecondary" align="center">
-                    View and add content to your courses.
+                    Manage and update course content.
                   </Typography>
                 </Box>
               </CardContent>
             </CardActionArea>
           </Card>
         </Grid>
-        </Grid>
+      </Grid>
     </Container>
   );
 };
