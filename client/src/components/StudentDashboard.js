@@ -5,9 +5,8 @@ import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardActionArea from '@mui/material/CardActionArea';
-import { Box } from '@mui/material';
+import { Box, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-
 // Icon imports
 import BookIcon from '@mui/icons-material/Book';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -122,6 +121,29 @@ const StudentDashboard = () => {
             </CardActionArea>
           </Card>
         </Grid>
+
+        <Grid item xs={12} sm={6} md={3}>
+        <Card>
+            <CardContent>
+              <Typography variant="h6" gutterBottom>
+                Take Quiz
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                Participate in quizzes for your courses.
+              </Typography>
+              <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={() => navigate('/take-quiz')}
+                style={{ marginTop: '10px' }}
+              >
+                Go to Take Quiz
+              </Button>
+            </CardContent>
+          </Card>
+        </Grid>
+
       </Grid>
     </Container>
   );
