@@ -7,6 +7,8 @@ const authRoutes = require('./routes/authRoutes');
 const courseRoutes = require('./routes/courseRoutes');
 const enrollmentRoutes = require('./routes/enrollmentRoutes');
 const assignmentRoutes = require('./routes/assignmentRoutes');
+const quizRoutes = require('./routes/quizRoutes'); 
+const authenticate = require('./middleware/authenticate');
 const path = require('path');
 
 dotenv.config();
@@ -46,6 +48,9 @@ try {
 
   app.use('/api/assignments', assignmentRoutes);
   console.log("Assignment routes loaded successfully");
+
+  app.use('/api/quizzes',quizRoutes);
+  console.log("Quiz routes loaded succesfully");
 } catch (error) {
   console.error("Error loading routes:", error.message);
 }

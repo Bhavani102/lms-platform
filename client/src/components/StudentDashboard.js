@@ -135,7 +135,7 @@ const StudentDashboard = () => {
                 variant="contained"
                 color="primary"
                 fullWidth
-                onClick={() => navigate('/take-quiz')}
+                onClick={() => navigate('/quiz-dashboard')}
                 style={{ marginTop: '10px' }}
               >
                 Go to Take Quiz

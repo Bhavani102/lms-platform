@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { v4 as uuid } from "uuid";
 import axios from "axios";
 import {
@@ -20,22 +20,9 @@ import FileCopyIcon from "@mui/icons-material/FileCopy";
 
 const FormBuilder = () => {
   const [title, setTitle] = useState("");
-  const [forms, setForms] = useState([
-    {
-      id: uuid(),
-      questions: [
-        {
-          id: uuid(),
-          questionText: "",
-          options: [],
-          correctAnswer: "",
-          answerType: "",
-        },
-      ],
-    },
-  ]);
-
-  const [showSaveButton, setShowSaveButton] = useState(false);
+  const [courseName, setCourseName] = useState("");
+  const [deadline, setDeadline] = useState("");
+  const [draftedQuizzes, setDraftedQuizzes] = useState([]);
   const [questions, setQuestions] = useState([
     {
       id: uuid(),
@@ -46,6 +33,31 @@ const FormBuilder = () => {
     },
   ]);
 
+  const fetchDrafts = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/quizzes/drafts", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
+      });
+      setDraftedQuizzes(response.data);
+    } catch (error) {
+      console.error("Error fetching drafted quizzes:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDrafts();
+  }, []);
+ 
+  const formatISOToDatetimeLocal = (isoString) => {
+    const date = new Date(isoString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
+  
   const handleQuestionTextChange = (questionId, value) => {
     setQuestions((prevQuestions) =>
       prevQuestions.map((question) =>
@@ -124,35 +136,64 @@ const FormBuilder = () => {
     setQuestions((prevQuestions) => [...prevQuestions, copiedQuestion]);
   };
 
-  const handleSaveForm = async () => {
-    // Extracting relevant quiz data from the state
-    const quizData = {
-      courseIdentifier: "CS101", // Replace with dynamic course identifier if needed
-      questions: forms[0].questions.map((question) => ({
-        questionText: question.questionText,
-        options: question.options,
-        correctAnswer: question.correctAnswer, // Include correctAnswer field if needed
-      })),
-    };
-  
+  const handleSaveDraft = async () => {
     try {
-      const response = await axios.post("http://localhost:5000/api/quizzes", quizData, {
-        headers: { "Content-Type": "application/json" },
+      const quizData = {
+        title,
+        courseName,
+        deadline,
+        questions,
+        isDraft: true,
+      };
+
+      const response = await axios.post("http://localhost:5000/api/quizzes/save", quizData, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
       });
-      alert("Quiz saved successfully!");
-      setShowSaveButton(true);
+
+      alert("Quiz saved as draft successfully!");
+      fetchDrafts(); // Refresh drafts
     } catch (error) {
-      console.error("Error saving quiz:", error);
-      alert("Failed to save quiz. Please try again.");
+      console.error("Error saving draft:", error);
+      alert("Failed to save quiz as draft. Please try again.");
     }
   };
-  
+
+  const handlePostQuiz = async () => {
+    try {
+      const quizData = {
+        title,
+        courseName,
+        deadline,
+        questions,
+        isDraft: false,
+      };
+
+      const response = await axios.post("http://localhost:5000/api/quizzes/post", quizData, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
+      });
+
+      alert("Quiz posted successfully!");
+      fetchDrafts(); // Refresh drafts
+    } catch (error) {
+      console.error("Error posting quiz:", error);
+      alert("Failed to post quiz. Please try again.");
+    }
+  };
+
+  const handleEditDraft = (quiz) => {
+    setTitle(quiz.title);
+    setCourseName(quiz.courseName);
+    setDeadline(formatISOToDatetimeLocal(quiz.deadline));
+    setQuestions(quiz.questions.map((q) => ({ ...q, id: uuid() }))); // Add unique IDs for editing
+  };
 
   return (
     <Container maxWidth="md">
       <Typography variant="h4" gutterBottom>
-        Create Quiz
+        Create or Edit Quizzes
       </Typography>
+
+      {/* New Quiz Form */}
       <TextField
         label="Quiz Title"
         variant="outlined"
@@ -160,6 +201,26 @@ const FormBuilder = () => {
         margin="normal"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
+      />
+      <TextField
+        label="Course Name"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        value={courseName}
+        onChange={(e) => setCourseName(e.target.value)}
+      />
+      <TextField
+        label="Deadline"
+        type="datetime-local"
+        variant="outlined"
+        fullWidth
+        margin="normal"
+        value={deadline}
+        onChange={(e) => setDeadline(e.target.value)}
+        InputLabelProps={{
+          shrink: true,
+        }}
       />
       {questions.map((question, index) => (
         <Card key={question.id} style={{ marginBottom: "1rem" }}>
@@ -261,16 +322,50 @@ const FormBuilder = () => {
         onClick={handleAddQuestion}
         style={{ marginTop: "1rem" }}
       >
-        Add New Question
+        Add Question
+      </Button>
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={handleSaveDraft}
+        style={{ marginTop: "1rem", marginLeft: "1rem" }}
+      >
+        Save Draft
       </Button>
       <Button
         variant="contained"
         color="primary"
-        onClick={handleSaveForm}
+        onClick={handlePostQuiz}
         style={{ marginTop: "1rem", marginLeft: "1rem" }}
       >
-        Save Quiz
+        Post Quiz
       </Button>
+
+      {/* Drafted Quizzes */}
+      <Typography variant="h5" gutterBottom style={{ marginTop: "2rem" }}>
+        Drafted Quizzes
+      </Typography>
+      {draftedQuizzes.map((quiz) => (
+        <Card key={quiz._id} style={{ marginBottom: "1rem" }}>
+          <CardContent>
+            <Typography variant="h6">{quiz.title}</Typography>
+            <Typography variant="body2" color="textSecondary">
+              Course: {quiz.courseName}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              Deadline: {new Date(quiz.deadline).toLocaleString()}
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => handleEditDraft(quiz)}
+              style={{ marginTop: "1rem" }}
+            >
+              Edit Quiz
+            </Button>
+          </CardContent>
+        </Card>
+      ))}
     </Container>
   );
 };
