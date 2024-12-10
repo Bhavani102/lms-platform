@@ -58,20 +58,31 @@ const StudentQuizDashboard = () => {
     );
   };
 
-  const handleAnswerChange = (questionId, value) => {
-    setQuizAnswers((prevAnswers) => ({
-      ...prevAnswers,
-      [questionId]: value,
-    }));
+  const handleAnswerChange = (questionId, value, type) => {
+    setQuizAnswers((prevAnswers) => {
+      if (type === "checkbox") {
+        const currentAnswers = prevAnswers[questionId] || [];
+        const updatedAnswers = currentAnswers.includes(value)
+          ? currentAnswers.filter((answer) => answer !== value)
+          : [...currentAnswers, value];
+        return { ...prevAnswers, [questionId]: updatedAnswers };
+      }
+      return { ...prevAnswers, [questionId]: value };
+    });
   };
 
   const handleSubmitQuiz = async () => {
     if (!currentQuiz) return;
-
+  
     try {
+      const formattedAnswers = Object.entries(quizAnswers).reduce((acc, [questionId, answer]) => {
+        acc[questionId] = Array.isArray(answer) ? answer : answer.trim();
+        return acc;
+      }, {});
+  
       const response = await axios.post(
         `http://localhost:5000/api/quizzes/${currentQuiz._id}/submit`,
-        { answers: quizAnswers },
+        { answers: formattedAnswers },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
         }
@@ -85,7 +96,7 @@ const StudentQuizDashboard = () => {
       alert("Failed to submit quiz. Please try again.");
     }
   };
-
+  
   if (currentQuiz) {
     return (
       <Container maxWidth="md">
@@ -118,22 +129,33 @@ const StudentQuizDashboard = () => {
                 />
               )}
               {["radio", "checkbox"].includes(question.answerType) && (
-                <div>
-                  {question.options.map((option, idx) => (
-                    <div key={idx}>
-                      <label>
-                        <input
-                          type={question.answerType}
-                          name={question._id}
-                          value={option}
-                          onChange={(e) => handleAnswerChange(question._id, option)}
-                        />
-                        {option}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div>
+                {question.options.map((option, idx) => (
+                  <div key={idx}>
+                    <label>
+                      <input
+                        type={question.answerType}
+                        name={question._id}
+                        value={option}
+                        checked={
+                          question.answerType === "checkbox"
+                            ? quizAnswers[question._id]?.includes(option)
+                            : quizAnswers[question._id] === option
+                        }
+                        onChange={(e) =>
+                          handleAnswerChange(
+                            question._id,
+                            option,
+                            question.answerType
+                          )
+                        }
+                      />
+                      {option}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            )}
             </CardContent>
           </Card>
         ))}

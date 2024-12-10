@@ -92,6 +92,7 @@ router.get('/:id', authenticate, async (req, res) => {
 });
 
 // Submit Quiz
+// Submit Quiz
 router.post('/:quizId/submit', authenticate, async (req, res) => {
   const { answers } = req.body;
   const studentEmail = req.user.email;
@@ -102,9 +103,21 @@ router.post('/:quizId/submit', authenticate, async (req, res) => {
       return res.status(404).json({ message: 'Quiz not found.' });
     }
 
-    const score = quiz.questions.reduce((total, question, index) => {
-      const studentAnswer = answers[index]?.answer || '';
-      return studentAnswer === question.correctAnswer ? total + 1 : total;
+    // Calculate score
+    const score = quiz.questions.reduce((total, question) => {
+      const studentAnswer = answers[question._id];
+      if (question.answerType === 'checkbox') {
+        const correctAnswer = Array.isArray(question.correctAnswer)
+          ? question.correctAnswer.sort().join(',')
+          : question.correctAnswer;
+        const submittedAnswer = Array.isArray(studentAnswer)
+          ? studentAnswer.sort().join(',')
+          : studentAnswer;
+
+        return correctAnswer === submittedAnswer ? total + 1 : total;
+      } else {
+        return studentAnswer === question.correctAnswer ? total + 1 : total;
+      }
     }, 0);
 
     res.status(200).json({ message: 'Quiz submitted successfully!', score });
@@ -113,6 +126,7 @@ router.post('/:quizId/submit', authenticate, async (req, res) => {
     res.status(500).json({ message: 'Failed to submit quiz.' });
   }
 });
+
 
 // Update a Drafted Quiz
 router.put('/draft/:id', authenticate, async (req, res) => {
