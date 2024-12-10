@@ -189,8 +189,17 @@ const FormBuilder = () => {
 
   return (
     <Container maxWidth="md">
-      <Typography variant="h4" gutterBottom>
-        Create or Edit Quizzes
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        align="center"
+        sx={{
+          marginTop: '2rem',
+          marginBottom: '2rem',
+        }}
+      >
+        Create or Edit Quiz
       </Typography>
 
       {/* New Quiz Form */}

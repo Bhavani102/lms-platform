@@ -58,7 +58,18 @@ const AdminAssignments = () => {
 
   return (
     <Container maxWidth="lg">
-      <Typography variant="h4" gutterBottom>
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        align="center"
+        sx={{
+          //fontFamily: 'Roboto, sans-serif',
+          //fontWeight: 'bold',
+          marginTop: '2rem',
+          marginBottom: '2rem',
+        }}
+      >
         Post Assignments
       </Typography>
       <Grid container spacing={3}>

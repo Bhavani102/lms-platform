@@ -13,7 +13,7 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import GradeIcon from '@mui/icons-material/Grade';
 import SettingsIcon from '@mui/icons-material/Settings';
 import SchoolIcon from '@mui/icons-material/School'; // Icon for Course Enrollment
-
+import QuizIcon from '@mui/icons-material/Quiz';
 const StudentDashboard = () => {
   const navigate = useNavigate();
 
@@ -23,7 +23,18 @@ const StudentDashboard = () => {
 
   return (
     <Container maxWidth="lg">
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        align="center"
+        sx={{
+          //fontFamily: 'Roboto, sans-serif',
+          //fontWeight: 'bold',
+          marginTop: '2rem',
+          marginBottom: '2rem',
+        }}
+      >
         Student Dashboard
       </Typography>
       <Grid container spacing={3}>
@@ -123,26 +134,22 @@ const StudentDashboard = () => {
         </Grid>
 
         <Grid item xs={12} sm={6} md={3}>
-        <Card>
+        <Card onClick={() => navigate("/quiz-dashboard")}>
+          <CardActionArea>
             <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Take Quiz
-              </Typography>
-              <Typography variant="body2" color="textSecondary">
-                Participate in quizzes for your courses.
-              </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                fullWidth
-                onClick={() => navigate('/quiz-dashboard')}
-                style={{ marginTop: '10px' }}
-              >
-                Go to Take Quiz
-              </Button>
+              <Box display="flex" flexDirection="column" alignItems="center">
+                <QuizIcon fontSize="large" color="primary" />
+                <Typography variant="h6" component="div" align="center" gutterBottom>
+                  Take Quiz
+                </Typography>
+                <Typography variant="body2" color="textSecondary" align="center">
+                  Attempt Quizzes of your courses.
+                </Typography>
+              </Box>
             </CardContent>
-          </Card>
-        </Grid>
+          </CardActionArea>
+        </Card>
+      </Grid>
 
       </Grid>
     </Container>

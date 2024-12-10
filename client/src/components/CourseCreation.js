@@ -31,7 +31,16 @@ const CreateCourse = () => {
 
   return (
     <Container maxWidth="sm">
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        align="center"
+        sx={{
+          marginTop: '2rem',
+          marginBottom: '2rem',
+        }}
+      >
         Create a New Course
       </Typography>
       <form onSubmit={handleSubmit}>

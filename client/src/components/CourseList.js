@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery } from 'react-query';
 import axios from 'axios';
-
+import { Typography } from '@mui/material';
 const CourseList = () => {
   const { data: courses, isLoading, isError } = useQuery('courses', async () => {
     const res = await axios.get('/api/courses');
@@ -22,7 +22,19 @@ const CourseList = () => {
 
   return (
     <div>
-      <h2>Available Courses</h2>
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        align="center"
+        sx={{
+          marginTop: '2rem',
+          marginBottom: '2rem',
+        }}
+      >
+        Available Courses
+      </Typography>
+
       <ul>
         {courses.map((course) => (
           <li key={course._id}>

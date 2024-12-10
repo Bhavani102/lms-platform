@@ -68,9 +68,19 @@ const StudentAssignments = () => {
 
   return (
     <Container maxWidth="lg">
-      <Typography variant="h4" gutterBottom>
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        align="center"
+        sx={{
+          marginTop: '2rem',
+          marginBottom: '2rem',
+        }}
+      >
         My Assignments
       </Typography>
+
       <Grid container spacing={3}>
         {assignments.length > 0 ? (
           assignments.map((assignment) => (

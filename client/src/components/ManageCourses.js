@@ -52,8 +52,17 @@ const ManageCourses = () => {
 
   return (
     <Container maxWidth="lg">
-      <Typography variant="h4" gutterBottom>
-        Manage Your Courses
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        align="center"
+        sx={{
+          marginTop: '2rem',
+          marginBottom: '2rem',
+        }}
+      >
+        Manage your Courses
       </Typography>
       <Grid container spacing={3}>
         {courses.length > 0 ? (

@@ -89,7 +89,16 @@ const TakeQuiz = () => {
 
   return (
     <Container>
-      <Typography variant="h4" gutterBottom>
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        align="center"
+        sx={{
+          marginTop: '2rem',
+          marginBottom: '2rem',
+        }}
+      >
         {quiz.title}
       </Typography>
       <QuizTimer deadline={quiz.deadline} onTimeUp={handleTimeUp} />

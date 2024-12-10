@@ -16,7 +16,16 @@ const CourseContent = () => {
 
   return (
     <Container maxWidth="md">
-      <Typography variant="h4" gutterBottom>
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        align="center"
+        sx={{
+          marginTop: '2rem',
+          marginBottom: '2rem',
+        }}
+      >
         Content for {courseName}
       </Typography>
       {content.length > 0 ? (

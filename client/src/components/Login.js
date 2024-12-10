@@ -38,8 +38,17 @@ const Login = () => {
 
   return (
     <Container maxWidth="sm">
-      <Typography variant="h4" component="h1" gutterBottom>
-        Login 
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        align="center"
+        sx={{
+          marginTop: '2rem',
+          marginBottom: '2rem',
+        }}
+      >
+        Login Here
       </Typography>
       <form onSubmit={handleSubmit}>
         <TextField

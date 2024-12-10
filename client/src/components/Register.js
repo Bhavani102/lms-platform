@@ -33,9 +33,19 @@ const Register = () => {
 
   return (
     <Container maxWidth="sm">
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        align="center"
+        sx={{
+          marginTop: '2rem',
+          marginBottom: '2rem',
+        }}
+      >
         Register
       </Typography>
+
       <form onSubmit={handleSubmit}>
         <TextField
           label="Name"

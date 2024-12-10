@@ -41,7 +41,16 @@ const CourseEnrollment = () => {
 
   return (
     <Container maxWidth="lg">
-      <Typography variant="h4" component="h1" gutterBottom>
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        align="center"
+        sx={{
+          marginTop: '2rem',
+          marginBottom: '2rem',
+        }}
+      >
         Enroll in Available Courses
       </Typography>
       <Grid container spacing={3}>
