@@ -121,6 +121,17 @@ router.post('/:quizId/submit', authenticate, async (req, res) => {
       if (question.answerType === "checkbox") {
         let partialScore = 0;
       
+        // Ensure correctAnswer is an array
+        let parsedCorrectAnswer;
+        try {
+          parsedCorrectAnswer = Array.isArray(correctAnswer)
+            ? correctAnswer
+            : JSON.parse(correctAnswer);
+        } catch (error) {
+          console.error(`[DEBUG] Failed to parse correctAnswer: ${correctAnswer}`, error);
+          return; // Skip scoring if correctAnswer cannot be parsed
+        }
+      
         // Ensure studentAnswer is an array
         if (!Array.isArray(studentAnswer) || studentAnswer.length === 0) {
           console.log(`[DEBUG] Invalid or Empty Answer for Checkbox Question. Score: 0`);
@@ -128,7 +139,7 @@ router.post('/:quizId/submit', authenticate, async (req, res) => {
         }
       
         // Parse correct answers into a set of options for validation
-        const correctOptionsSet = new Set(correctAnswer.map((item) => item.option));
+        const correctOptionsSet = new Set(parsedCorrectAnswer.map((item) => item.option));
       
         // Check for invalid answers
         const hasInvalidAnswer = studentAnswer.some((answer) => !correctOptionsSet.has(answer));
@@ -138,7 +149,7 @@ router.post('/:quizId/submit', authenticate, async (req, res) => {
         }
       
         // Calculate partial score for valid answers
-        correctAnswer.forEach((correctOption) => {
+        parsedCorrectAnswer.forEach((correctOption) => {
           console.log(
             `[DEBUG] Comparing Option: "${correctOption.option}" with Student Answers: ${JSON.stringify(studentAnswer)}`
           );
@@ -159,6 +170,7 @@ router.post('/:quizId/submit', authenticate, async (req, res) => {
         console.log(`[DEBUG] Partial Score for Checkbox Question: ${partialScore}`);
         totalScore += partialScore; // Add the partial score for this question
       }
+      
       
 
       // For radio or input types
