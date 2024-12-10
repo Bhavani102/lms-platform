@@ -1,20 +1,29 @@
 const mongoose = require('mongoose');
 
-const questionSchema = new mongoose.Schema({
-  questionText: { type: String, required: true },
-  options: [{ type: String }],
-  correctAnswer: { type: String, required: true },
-  answerType: { type: String, required: true }, // "radio", "checkbox", "input"
-});
-
 const quizSchema = new mongoose.Schema({
   title: { type: String, required: true },
   courseName: { type: String, required: true },
-  postedBy: { type: String, required: true }, // Lecturer name
-  questions: [questionSchema],
-  isDraft: { type: Boolean, default: true },
+  questions: [
+    {
+      questionText: { type: String, required: true },
+      answerType: { type: String, enum: ['input', 'radio', 'checkbox'], required: true },
+      options: [String], // For multiple-choice questions
+      correctAnswer: mongoose.Schema.Types.Mixed, // Can be string or array depending on `answerType`
+    },
+  ],
+  submissions: [
+    {
+      studentEmail: { type: String, required: true },
+      answers: { type: Map, of: mongoose.Schema.Types.Mixed }, // Allows string or array values
+      score: { type: Number },
+      submittedAt: { type: Date, default: Date.now },
+    },
+  ],
   deadline: { type: Date, required: true },
-  createdAt: { type: Date, default: Date.now },
+  postedBy: { type: String, required: true },
+  isDraft: { type: Boolean, default: false },
 });
 
-module.exports = mongoose.model('Quiz', quizSchema);
+const Quiz = mongoose.model('Quiz', quizSchema);
+
+module.exports = Quiz;

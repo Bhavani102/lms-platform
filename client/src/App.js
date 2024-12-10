@@ -18,6 +18,7 @@ import StudentAssignments from './components/StudentAssignments';
 import AdminAssignments from './components/AdminAssignment';
 import FormBuilder from './components/FormBuilder';
 import StudentQuizDashboard from './components/StudentQuizDashboard';
+import LecturerSubmissions from './components/AdminSubmissions';
 function App() {
   return (
     <AuthProvider>
@@ -39,7 +40,7 @@ function App() {
           <Route path="/student-assignments" element={<StudentAssignments />} />
           <Route path="/admin-assignments" element={<AdminAssignments />} />
            <Route path="/admin/post-quiz" element={<FormBuilder />} />
-          <Route path="/take-quiz" element={<TakeQuiz />} />
+          <Route path="/quiz-submissions" element={<LecturerSubmissions />} />
           {/* <Route path="/student/quiz/:quizId" element={<TakeQuiz />} /> */}
           <Route path="/quiz-dashboard" element={<StudentQuizDashboard />} />
           

@@ -186,7 +186,20 @@ const FormBuilder = () => {
     setDeadline(formatISOToDatetimeLocal(quiz.deadline));
     setQuestions(quiz.questions.map((q) => ({ ...q, id: uuid() }))); // Add unique IDs for editing
   };
-
+  const handleDeleteDraft = async (draftId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/quizzes/draft/${draftId}`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
+      });
+      alert("Draft deleted successfully!");
+      fetchDrafts(); // Refresh the quiz list
+    } catch (error) {
+      console.error("Error deleting draft:", error);
+      alert("Failed to delete draft. Please try again.");
+    }
+  };
+  
+  
   return (
     <Container maxWidth="md">
       <Typography
@@ -371,6 +384,14 @@ const FormBuilder = () => {
               style={{ marginTop: "1rem" }}
             >
               Edit Quiz
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => handleDeleteDraft(quiz._id)}
+              style={{ marginTop: "1rem",marginLeft: "1rem" }}
+            >
+              Delete Draft
             </Button>
           </CardContent>
         </Card>

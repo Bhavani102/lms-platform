@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   Button,
-  CircularProgress,
   Grid,
 } from "@mui/material";
 
@@ -19,6 +18,7 @@ const StudentQuizDashboard = () => {
 
   useEffect(() => {
     fetchQuizzes();
+    return () => clearInterval(timer); // Clean up timer on unmount
   }, []);
 
   const fetchQuizzes = async () => {
@@ -43,19 +43,18 @@ const StudentQuizDashboard = () => {
 
     setCurrentQuiz(quiz);
     setTimeRemaining(Math.floor((deadline - now) / 1000)); // Time in seconds
-    setTimer(
-      setInterval(() => {
-        setTimeRemaining((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            alert("Time's up!");
-            handleSubmitQuiz();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000)
-    );
+    const newTimer = setInterval(() => {
+      setTimeRemaining((prev) => {
+        if (prev <= 1) {
+          clearInterval(newTimer);
+          alert("Time's up!");
+          handleSubmitQuiz();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    setTimer(newTimer);
   };
 
   const handleAnswerChange = (questionId, value, type) => {
@@ -73,16 +72,11 @@ const StudentQuizDashboard = () => {
 
   const handleSubmitQuiz = async () => {
     if (!currentQuiz) return;
-  
+
     try {
-      const formattedAnswers = Object.entries(quizAnswers).reduce((acc, [questionId, answer]) => {
-        acc[questionId] = Array.isArray(answer) ? answer : answer.trim();
-        return acc;
-      }, {});
-  
       const response = await axios.post(
         `http://localhost:5000/api/quizzes/${currentQuiz._id}/submit`,
-        { answers: formattedAnswers },
+        { answers: quizAnswers },
         {
           headers: { Authorization: `Bearer ${localStorage.getItem("authToken")}` },
         }
@@ -96,19 +90,15 @@ const StudentQuizDashboard = () => {
       alert("Failed to submit quiz. Please try again.");
     }
   };
-  
+
   if (currentQuiz) {
     return (
       <Container maxWidth="md">
-          <Typography
+        <Typography
           variant="h4"
-          component="h1"
-          gutterBottom
           align="center"
-          sx={{
-            marginTop: '2rem',
-            marginBottom: '2rem',
-          }}
+          gutterBottom
+          sx={{ marginTop: "2rem", marginBottom: "2rem" }}
         >
           {currentQuiz.title}
         </Typography>
@@ -129,33 +119,33 @@ const StudentQuizDashboard = () => {
                 />
               )}
               {["radio", "checkbox"].includes(question.answerType) && (
-              <div>
-                {question.options.map((option, idx) => (
-                  <div key={idx}>
-                    <label>
-                      <input
-                        type={question.answerType}
-                        name={question._id}
-                        value={option}
-                        checked={
-                          question.answerType === "checkbox"
-                            ? quizAnswers[question._id]?.includes(option)
-                            : quizAnswers[question._id] === option
-                        }
-                        onChange={(e) =>
-                          handleAnswerChange(
-                            question._id,
-                            option,
-                            question.answerType
-                          )
-                        }
-                      />
-                      {option}
-                    </label>
-                  </div>
-                ))}
-              </div>
-            )}
+                <div>
+                  {question.options.map((option, idx) => (
+                    <div key={idx}>
+                      <label>
+                        <input
+                          type={question.answerType}
+                          name={question._id}
+                          value={option}
+                          checked={
+                            question.answerType === "checkbox"
+                              ? quizAnswers[question._id]?.includes(option)
+                              : quizAnswers[question._id] === option
+                          }
+                          onChange={(e) =>
+                            handleAnswerChange(
+                              question._id,
+                              option,
+                              question.answerType
+                            )
+                          }
+                        />
+                        {option}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         ))}
@@ -175,18 +165,12 @@ const StudentQuizDashboard = () => {
     <Container maxWidth="md">
       <Typography
         variant="h4"
-        component="h1"
-        gutterBottom
         align="center"
-        sx={{
-          marginTop: '2rem',
-          marginBottom: '2rem',
-        }}
+        gutterBottom
+        sx={{ marginTop: "2rem", marginBottom: "2rem" }}
       >
         Available Quizzes
       </Typography>
-
-
       {quizzes.length === 0 ? (
         <Typography variant="body1" color="textSecondary">
           No quizzes available at the moment.

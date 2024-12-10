@@ -2,7 +2,7 @@ const express = require('express');
 const Quiz = require('../models/Quiz');
 const authenticate = require('../middleware/authenticate');
 const router = express.Router();
-
+const mongoose = require("mongoose");
 // Fetch Drafted Quizzes
 router.get('/drafts', authenticate, async (req, res) => {
   try {
@@ -92,40 +92,104 @@ router.get('/:id', authenticate, async (req, res) => {
 });
 
 // Submit Quiz
-// Submit Quiz
 router.post('/:quizId/submit', authenticate, async (req, res) => {
-  const { answers } = req.body;
+  const { answers } = req.body; // answers: { questionId: studentAnswer }
+  const { quizId } = req.params;
   const studentEmail = req.user.email;
 
+  if (!answers || !quizId) {
+    return res.status(400).json({ message: 'Answers and quiz ID are required.' });
+  }
+
   try {
-    const quiz = await Quiz.findById(req.params.quizId);
+    const quiz = await Quiz.findById(quizId);
     if (!quiz) {
       return res.status(404).json({ message: 'Quiz not found.' });
     }
 
-    // Calculate score
-    const score = quiz.questions.reduce((total, question) => {
-      const studentAnswer = answers[question._id];
-      if (question.answerType === 'checkbox') {
-        const correctAnswer = Array.isArray(question.correctAnswer)
-          ? question.correctAnswer.sort().join(',')
-          : question.correctAnswer;
-        const submittedAnswer = Array.isArray(studentAnswer)
-          ? studentAnswer.sort().join(',')
-          : studentAnswer;
+    let score = 0;
 
-        return correctAnswer === submittedAnswer ? total + 1 : total;
-      } else {
-        return studentAnswer === question.correctAnswer ? total + 1 : total;
+    // Loop through questions to calculate score
+    quiz.questions.forEach((question) => {
+      let studentAnswer = answers[question._id];
+      let correctAnswer = question.correctAnswer;
+
+      // Debugging
+      console.log(
+        `Question ID: ${question._id}, Correct Answer: ${JSON.stringify(correctAnswer)}, Student Answer: ${JSON.stringify(studentAnswer)}`
+      );
+
+      // Normalize single-answer responses (radio or input)
+      if (question.answerType === 'radio' || question.answerType === 'input') {
+        if (Array.isArray(studentAnswer)) {
+          studentAnswer = studentAnswer[0]; // Convert array to a single string
+        }
+        if (
+          typeof studentAnswer === 'string' &&
+          typeof correctAnswer === 'string' &&
+          studentAnswer.trim() === correctAnswer.trim()
+        ) {
+          score += 1;
+        }
       }
-    }, 0);
+
+      // Normalize and compare checkbox answers
+      if (question.answerType === 'checkbox') {
+        const normalizeArray = (arr) =>
+          Array.isArray(arr) ? arr.map((item) => item.trim()).sort() : [];
+        const normalizedStudentAnswer = normalizeArray(studentAnswer);
+        const normalizedCorrectAnswer = normalizeArray(
+          Array.isArray(correctAnswer) ? correctAnswer : [correctAnswer] // Ensure correctAnswer is an array
+        );
+
+        if (
+          JSON.stringify(normalizedStudentAnswer) === JSON.stringify(normalizedCorrectAnswer)
+        ) {
+          score += 1;
+        }
+      }
+    });
+
+    // Save submission with score
+    quiz.submissions.push({
+      studentEmail,
+      answers,
+      score,
+      submittedAt: new Date(),
+    });
+
+    await quiz.save();
 
     res.status(200).json({ message: 'Quiz submitted successfully!', score });
   } catch (error) {
     console.error('Error submitting quiz:', error);
-    res.status(500).json({ message: 'Failed to submit quiz.' });
+    res.status(500).json({ message: 'Server error while submitting quiz.' });
   }
 });
+
+
+// Fetch submissions for a quiz by student email
+router.get('/:quizId/submissions', authenticate, async (req, res) => {
+  const { quizId } = req.params;
+  const { studentEmail } = req.query;
+
+  try {
+    const quiz = await Quiz.findById(quizId);
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found." });
+    }
+
+    const submissions = studentEmail
+      ? quiz.submissions.filter((submission) => submission.studentEmail === studentEmail)
+      : quiz.submissions;
+
+    res.status(200).json(submissions);
+  } catch (error) {
+    console.error("Error fetching submissions:", error);
+    res.status(500).json({ message: "Server error fetching submissions." });
+  }
+});
+
 
 
 // Update a Drafted Quiz
@@ -152,6 +216,27 @@ router.put('/draft/:id', authenticate, async (req, res) => {
   } catch (error) {
     console.error('Error updating quiz:', error);
     res.status(500).json({ message: 'Server error updating quiz.' });
+  }
+});
+
+
+
+router.delete('/draft/:id', authenticate, async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid draft ID format." });
+  }
+
+  try {
+    const deletedDraft = await Quiz.findByIdAndDelete(id);
+    if (!deletedDraft) {
+      return res.status(404).json({ message: "Draft not found." });
+    }
+    res.status(200).json({ message: "Draft deleted successfully!" });
+  } catch (error) {
+    console.error("Error deleting draft:", error);
+    res.status(500).json({ message: "Server error deleting draft." });
   }
 });
 

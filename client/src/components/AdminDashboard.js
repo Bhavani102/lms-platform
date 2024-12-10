@@ -169,6 +169,25 @@ const AdminDashboard = () => {
           </CardActionArea>
         </Card>
       </Grid>
+
+      {/* Card 7: Quiz submissions */}
+      <Grid item xs={12} sm={6} md={3}>
+          <Card onClick={() => handleNavigation('/quiz-submissions')}>
+            <CardActionArea>
+              <CardContent>
+                <Box display="flex" flexDirection="column" alignItems="center">
+                  <ContentPasteIcon fontSize="large" color="primary" />
+                  <Typography variant="h6" component="div" align="center" gutterBottom>
+                    Quiz Submissions
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" align="center">
+                    View Submitted Student Drafts.
+                  </Typography>
+                </Box>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Grid>
       </Grid>
     </Container>
   );

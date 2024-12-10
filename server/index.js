@@ -8,6 +8,7 @@ const courseRoutes = require('./routes/courseRoutes');
 const enrollmentRoutes = require('./routes/enrollmentRoutes');
 const assignmentRoutes = require('./routes/assignmentRoutes');
 const quizRoutes = require('./routes/quizRoutes'); 
+const adminRoutes = require('./routes/adminRoutes');
 const authenticate = require('./middleware/authenticate');
 const path = require('path');
 
@@ -40,6 +41,9 @@ try {
   app.use('/api/auth', authRoutes);
   console.log("Auth routes loaded successfully");
   
+  app.use('/api/admin',adminRoutes);
+  console.log("Admin routes loaded succesfully");
+
   app.use('/api/courses', courseRoutes);
   console.log("Course routes loaded successfully");
 
@@ -51,6 +55,8 @@ try {
 
   app.use('/api/quizzes',quizRoutes);
   console.log("Quiz routes loaded succesfully");
+
+  
 } catch (error) {
   console.error("Error loading routes:", error.message);
 }
