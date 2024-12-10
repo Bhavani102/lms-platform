@@ -120,24 +120,31 @@ router.post('/:quizId/submit', authenticate, async (req, res) => {
 
       if (question.answerType === "checkbox") {
         let partialScore = 0;
-
-        // Validate if all student answers are valid options
+      
+        // Ensure studentAnswer is an array
+        if (!Array.isArray(studentAnswer) || studentAnswer.length === 0) {
+          console.log(`[DEBUG] Invalid or Empty Answer for Checkbox Question. Score: 0`);
+          return; // Skip scoring if no valid answers are provided
+        }
+      
+        // Parse correct answers into a set of options for validation
         const correctOptionsSet = new Set(correctAnswer.map((item) => item.option));
+      
+        // Check for invalid answers
         const hasInvalidAnswer = studentAnswer.some((answer) => !correctOptionsSet.has(answer));
-
         if (hasInvalidAnswer) {
           console.log(`[DEBUG] Invalid Answer Detected. Score for this question: 0`);
           return; // Skip scoring if any invalid answer is found
         }
-
+      
         // Calculate partial score for valid answers
         correctAnswer.forEach((correctOption) => {
           console.log(
             `[DEBUG] Comparing Option: "${correctOption.option}" with Student Answers: ${JSON.stringify(studentAnswer)}`
           );
-
+      
           const scoreValue = parseFloat(correctOption.score);
-
+      
           if (
             studentAnswer.includes(correctOption.option) &&
             !isNaN(scoreValue) // Ensure score is a valid number
@@ -148,10 +155,11 @@ router.post('/:quizId/submit', authenticate, async (req, res) => {
             console.log(`[DEBUG] No Match or Invalid Score`);
           }
         });
-
+      
         console.log(`[DEBUG] Partial Score for Checkbox Question: ${partialScore}`);
         totalScore += partialScore; // Add the partial score for this question
       }
+      
 
       // For radio or input types
       if (question.answerType === 'radio' || question.answerType === 'input') {
