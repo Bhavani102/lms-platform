@@ -107,60 +107,82 @@ router.post('/:quizId/submit', authenticate, async (req, res) => {
       return res.status(404).json({ message: 'Quiz not found.' });
     }
 
-    let score = 0;
+    let totalScore = 0;
 
-    // Loop through questions to calculate score
+    // Loop through questions to calculate the score
     quiz.questions.forEach((question) => {
-      let studentAnswer = answers[question._id];
-      let correctAnswer = question.correctAnswer;
+      const correctAnswer = question.correctAnswer; // Expected: [{ option: 'value', score: 'value' }]
+      const studentAnswer = answers[question._id]; // Expected: ["value1", "value2"] or "value"
 
-      // Debugging
       console.log(
-        `Question ID: ${question._id}, Correct Answer: ${JSON.stringify(correctAnswer)}, Student Answer: ${JSON.stringify(studentAnswer)}`
+        `[DEBUG] Question ID: ${question._id}, Correct Answer: ${JSON.stringify(correctAnswer)}, Student Answer: ${JSON.stringify(studentAnswer)}`
       );
 
-      // Normalize single-answer responses (radio or input)
-      if (question.answerType === 'radio' || question.answerType === 'input') {
-        if (Array.isArray(studentAnswer)) {
-          studentAnswer = studentAnswer[0]; // Convert array to a single string
+      if (question.answerType === "checkbox") {
+        let partialScore = 0;
+
+        // Validate if all student answers are valid options
+        const correctOptionsSet = new Set(correctAnswer.map((item) => item.option));
+        const hasInvalidAnswer = studentAnswer.some((answer) => !correctOptionsSet.has(answer));
+
+        if (hasInvalidAnswer) {
+          console.log(`[DEBUG] Invalid Answer Detected. Score for this question: 0`);
+          return; // Skip scoring if any invalid answer is found
         }
+
+        // Calculate partial score for valid answers
+        correctAnswer.forEach((correctOption) => {
+          console.log(
+            `[DEBUG] Comparing Option: "${correctOption.option}" with Student Answers: ${JSON.stringify(studentAnswer)}`
+          );
+
+          const scoreValue = parseFloat(correctOption.score);
+
+          if (
+            studentAnswer.includes(correctOption.option) &&
+            !isNaN(scoreValue) // Ensure score is a valid number
+          ) {
+            console.log(`[DEBUG] Match Found. Adding Score: ${scoreValue}`);
+            partialScore += scoreValue;
+          } else {
+            console.log(`[DEBUG] No Match or Invalid Score`);
+          }
+        });
+
+        console.log(`[DEBUG] Partial Score for Checkbox Question: ${partialScore}`);
+        totalScore += partialScore; // Add the partial score for this question
+      }
+
+      // For radio or input types
+      if (question.answerType === 'radio' || question.answerType === 'input') {
+        console.log(
+          `[DEBUG] Comparing Student Answer: "${studentAnswer}" with Correct Answer: "${correctAnswer}"`
+        );
+
         if (
           typeof studentAnswer === 'string' &&
           typeof correctAnswer === 'string' &&
           studentAnswer.trim() === correctAnswer.trim()
         ) {
-          score += 1;
-        }
-      }
-
-      // Normalize and compare checkbox answers
-      if (question.answerType === 'checkbox') {
-        const normalizeArray = (arr) =>
-          Array.isArray(arr) ? arr.map((item) => item.trim()).sort() : [];
-        const normalizedStudentAnswer = normalizeArray(studentAnswer);
-        const normalizedCorrectAnswer = normalizeArray(
-          Array.isArray(correctAnswer) ? correctAnswer : [correctAnswer] // Ensure correctAnswer is an array
-        );
-
-        if (
-          JSON.stringify(normalizedStudentAnswer) === JSON.stringify(normalizedCorrectAnswer)
-        ) {
-          score += 1;
+          console.log(`[DEBUG] Match Found. Adding Score: ${question.score || 1}`);
+          totalScore += question.score || 1; // Default score is 1 if not specified
+        } else {
+          console.log(`[DEBUG] No Match for Radio/Input Question`);
         }
       }
     });
 
-    // Save submission with score
+    // Save the submission with the calculated score
     quiz.submissions.push({
       studentEmail,
       answers,
-      score,
+      score: totalScore,
       submittedAt: new Date(),
     });
 
     await quiz.save();
 
-    res.status(200).json({ message: 'Quiz submitted successfully!', score });
+    res.status(200).json({ message: 'Quiz submitted successfully!', score: totalScore });
   } catch (error) {
     console.error('Error submitting quiz:', error);
     res.status(500).json({ message: 'Server error while submitting quiz.' });

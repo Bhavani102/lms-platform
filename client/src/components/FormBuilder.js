@@ -47,7 +47,7 @@ const FormBuilder = () => {
   useEffect(() => {
     fetchDrafts();
   }, []);
- 
+
   const formatISOToDatetimeLocal = (isoString) => {
     const date = new Date(isoString);
     const year = date.getFullYear();
@@ -57,7 +57,7 @@ const FormBuilder = () => {
     const minutes = String(date.getMinutes()).padStart(2, "0");
     return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
-  
+
   const handleQuestionTextChange = (questionId, value) => {
     setQuestions((prevQuestions) =>
       prevQuestions.map((question) =>
@@ -186,6 +186,7 @@ const FormBuilder = () => {
     setDeadline(formatISOToDatetimeLocal(quiz.deadline));
     setQuestions(quiz.questions.map((q) => ({ ...q, id: uuid() }))); // Add unique IDs for editing
   };
+
   const handleDeleteDraft = async (draftId) => {
     try {
       await axios.delete(`http://localhost:5000/api/quizzes/draft/${draftId}`, {
@@ -198,24 +199,13 @@ const FormBuilder = () => {
       alert("Failed to delete draft. Please try again.");
     }
   };
-  
-  
+
   return (
     <Container maxWidth="md">
-      <Typography
-        variant="h4"
-        component="h1"
-        gutterBottom
-        align="center"
-        sx={{
-          marginTop: '2rem',
-          marginBottom: '2rem',
-        }}
-      >
+      <Typography variant="h4" align="center" sx={{ marginTop: "2rem", marginBottom: "2rem" }}>
         Create or Edit Quiz
       </Typography>
 
-      {/* New Quiz Form */}
       <TextField
         label="Quiz Title"
         variant="outlined"
@@ -240,9 +230,7 @@ const FormBuilder = () => {
         margin="normal"
         value={deadline}
         onChange={(e) => setDeadline(e.target.value)}
-        InputLabelProps={{
-          shrink: true,
-        }}
+        InputLabelProps={{ shrink: true }}
       />
       {questions.map((question, index) => (
         <Card key={question.id} style={{ marginBottom: "1rem" }}>
@@ -256,17 +244,13 @@ const FormBuilder = () => {
               fullWidth
               margin="normal"
               value={question.questionText}
-              onChange={(e) =>
-                handleQuestionTextChange(question.id, e.target.value)
-              }
+              onChange={(e) => handleQuestionTextChange(question.id, e.target.value)}
             />
             <FormControl fullWidth margin="normal">
               <InputLabel>Answer Type</InputLabel>
               <Select
                 value={question.answerType}
-                onChange={(e) =>
-                  handleAnswerTypeChange(question.id, e.target.value)
-                }
+                onChange={(e) => handleAnswerTypeChange(question.id, e.target.value)}
               >
                 <MenuItem value="">Select</MenuItem>
                 <MenuItem value="input">Input</MenuItem>
@@ -284,9 +268,7 @@ const FormBuilder = () => {
                         variant="outlined"
                         fullWidth
                         value={option}
-                        onChange={(e) =>
-                          handleOptionChange(question.id, idx, e.target.value)
-                        }
+                        onChange={(e) => handleOptionChange(question.id, idx, e.target.value)}
                       />
                     </Grid>
                   </Grid>
@@ -303,14 +285,21 @@ const FormBuilder = () => {
               </>
             )}
             <TextField
-              label="Correct Answer"
+              label={
+                question.answerType === "checkbox"
+                  ? "Correct Answer (JSON with score)"
+                  : "Correct Answer"
+              }
+              placeholder={
+                question.answerType === "checkbox"
+                  ? `[{"option": "option1", "score": 0.5}]`
+                  : "Correct Answer"
+              }
               variant="outlined"
               fullWidth
               margin="normal"
               value={question.correctAnswer}
-              onChange={(e) =>
-                handleCorrectAnswerChange(question.id, e.target.value)
-              }
+              onChange={(e) => handleCorrectAnswerChange(question.id, e.target.value)}
             />
             <Grid container spacing={2}>
               <Grid item>
@@ -363,7 +352,6 @@ const FormBuilder = () => {
         Post Quiz
       </Button>
 
-      {/* Drafted Quizzes */}
       <Typography variant="h5" gutterBottom style={{ marginTop: "2rem" }}>
         Drafted Quizzes
       </Typography>
@@ -389,7 +377,7 @@ const FormBuilder = () => {
               variant="contained"
               color="primary"
               onClick={() => handleDeleteDraft(quiz._id)}
-              style={{ marginTop: "1rem",marginLeft: "1rem" }}
+              style={{ marginTop: "1rem", marginLeft: "1rem" }}
             >
               Delete Draft
             </Button>
