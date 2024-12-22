@@ -93,13 +93,14 @@ const StudentAssignments = () => {
                   </Typography>
                   {assignment.assignmentFile && (
                     <a
-                      href={`http://localhost:5000/${assignment.assignmentFile}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ display: 'block', margin: '10px 0' }}
-                    >
-                      View Assignment File
-                    </a>
+                    href={`http://localhost:5000/${assignment.assignmentFile}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ display: 'block', margin: '10px 0' }}
+                  >
+                    {assignment.assignmentFile.split('/').pop()}
+                  </a>
+                  
                   )}
                   <TextField
                     label="Submission Text"

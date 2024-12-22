@@ -22,7 +22,9 @@ router.post('/post', authenticate, upload.single('assignmentFile'), async (req, 
   try {
     const { courseName, assignmentText, deadline } = req.body;
     const postedBy = req.user.name;
-    const assignmentFile = req.file?.path;
+
+    // Save the file path as relative
+    const assignmentFile = req.file ? path.join('uploads', 'assignments', req.file.filename).replace(/\\/g, '/') : null;
 
     if (!courseName || !deadline) {
       return res.status(400).json({ message: 'courseName and deadline are required.' });

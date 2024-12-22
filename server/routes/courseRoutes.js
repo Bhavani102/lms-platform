@@ -86,22 +86,25 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 // Endpoint to add content to a course by name
+// server/routes/courseRoutes.js
+
+
+// Endpoint to add content to a course by name
 router.post('/:courseName/content', upload.single('pdfFile'), async (req, res) => {
   try {
     const { type } = req.body;
     const courseName = req.params.courseName;
 
-    // Find course by name
+    // Find the course by name
     const course = await Course.findOne({ name: courseName });
     if (!course) {
       return res.status(404).json({ message: 'Course not found' });
     }
 
     if (type === 'pdf' && req.file) {
-      // Push file path if the content type is PDF
-      course.content.push({ type, content: req.file.path });
-    } else {
-      return res.status(400).json({ message: 'File upload or content type is incorrect.' });
+      // Save relative path to the file
+      const relativeFilePath = path.join('uploads', req.file.filename).replace(/\\/g, '/');
+      course.content.push({ type, content: relativeFilePath });
     }
 
     await course.save();
@@ -111,6 +114,7 @@ router.post('/:courseName/content', upload.single('pdfFile'), async (req, res) =
     res.status(500).json({ message: 'Server error adding content' });
   }
 });
+
 
 // server/routes/courseRoutes.js
 router.get('/:courseName/content', async (req, res) => {
