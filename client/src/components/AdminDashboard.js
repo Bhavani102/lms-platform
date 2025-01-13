@@ -188,6 +188,24 @@ const AdminDashboard = () => {
             </CardActionArea>
           </Card>
         </Grid>
+        {/* card 8- Assignment submissions*/}
+        <Grid item xs={12} sm={6} md={3}>
+          <Card onClick={() => handleNavigation('/assignment-submissions')}>
+            <CardActionArea>
+              <CardContent>
+                <Box display="flex" flexDirection="column" alignItems="center">
+                  <ContentPasteIcon fontSize="large" color="primary" />
+                  <Typography variant="h6" component="div" align="center" gutterBottom>
+                    Assignment Submissions
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" align="center">
+                    View Submitted Student Assignments.
+                  </Typography>
+                </Box>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Grid>
       </Grid>
     </Container>
   );

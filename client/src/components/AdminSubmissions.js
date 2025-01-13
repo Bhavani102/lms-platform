@@ -8,7 +8,6 @@ import {
   Button,
   Card,
   CardContent,
-  Grid,
 } from '@mui/material';
 
 const AdminSubmissions = () => {
@@ -74,7 +73,31 @@ const AdminSubmissions = () => {
       alert('Failed to fetch submission.');
     }
   };
-  
+
+  const handleExportScores = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/quizzes/${selectedCourse}/quiz-scores`,
+        {
+          params: { quizId: selectedQuiz },
+          headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
+        }
+      );
+
+      // Trigger download of the Excel file
+      const link = document.createElement('a');
+      link.href = `http://localhost:5000/${response.data.filePath}`;
+      link.download = `${selectedCourse}-quiz-scores.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      alert('Quiz scores exported successfully!');
+    } catch (error) {
+      console.error('Error exporting quiz scores:', error);
+      alert('Failed to export quiz scores.');
+    }
+  };
 
   return (
     <Container maxWidth="md">
@@ -143,6 +166,21 @@ const AdminSubmissions = () => {
           ))}
         </Select>
       )}
+      <Button
+        variant="contained"
+        color="secondary"
+        onClick={handleExportScores}
+        disabled={!selectedQuiz}
+        fullWidth
+        style={{ marginBottom: '1rem' }}
+      >
+        Print Scores to Excel
+      </Button>
+
+      {/* Fetch Submission Section */}
+      <Typography variant="h5" component="h2" gutterBottom>
+        Fetch Submission of a Particular Student
+      </Typography>
 
       <Button
         variant="contained"
@@ -167,8 +205,8 @@ const AdminSubmissions = () => {
             Select Student
           </MenuItem>
           {students.map((student) => (
-            <MenuItem key={student} value={student}>
-              {student}
+            <MenuItem key={student.email} value={student.email}>
+              {student.name} ({student.email})
             </MenuItem>
           ))}
         </Select>

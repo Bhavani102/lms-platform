@@ -3,6 +3,9 @@ const Quiz = require('../models/Quiz');
 const authenticate = require('../middleware/authenticate');
 const router = express.Router();
 const mongoose = require("mongoose");
+const ExcelJS = require('exceljs');
+const Course = require('../models/Course');
+
 // Fetch Drafted Quizzes
 router.get('/drafts', authenticate, async (req, res) => {
   try {
@@ -279,6 +282,54 @@ router.delete('/draft/:id', authenticate, async (req, res) => {
   } catch (error) {
     console.error("Error deleting draft:", error);
     res.status(500).json({ message: "Server error deleting draft." });
+  }
+});
+
+router.get('/:courseName/quiz-scores', authenticate, async (req, res) => {
+  const { courseName } = req.params;
+  const { quizId } = req.query;
+
+  try {
+    const course = await Course.findOne({ name: courseName });
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found.' });
+    }
+
+    const quiz = await Quiz.findById(quizId);
+    if (!quiz) {
+      return res.status(404).json({ message: 'Quiz not found.' });
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Quiz Scores');
+
+    // Add headers
+    sheet.columns = [
+      { header: 'Student Email', key: 'email', width: 30 },
+      { header: 'Student Name', key: 'name', width: 30 },
+      { header: 'Score', key: 'score', width: 15 },
+    ];
+
+    // Add rows
+    course.students.forEach((student) => {
+      const submission = quiz.submissions.find(
+        (s) => s.studentEmail === student.email
+      );
+      sheet.addRow({
+        email: student.email,
+        name: student.name,
+        score: submission ? submission.score : 'N/A',
+      });
+    });
+
+    // Write Excel file
+    const filePath = `uploads/${courseName}-${quiz.title}-scores.xlsx`;
+    await workbook.xlsx.writeFile(filePath);
+
+    res.status(200).json({ message: 'Quiz scores exported successfully.', filePath });
+  } catch (error) {
+    console.error('Error exporting quiz scores:', error);
+    res.status(500).json({ message: 'Server error exporting quiz scores.' });
   }
 });
 

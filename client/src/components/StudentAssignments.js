@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
-import Grid from '@mui/material/Grid';
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  CardActions,
+  Grid,
+} from '@mui/material';
 
 const StudentAssignments = () => {
   const [assignments, setAssignments] = useState([]);
@@ -58,11 +60,13 @@ const StudentAssignments = () => {
         }
       );
       alert(response.data.message);
+
+      // Clear inputs for the submitted assignment
       setSubmissionTexts((prev) => ({ ...prev, [assignmentId]: '' }));
       setSubmissionFiles((prev) => ({ ...prev, [assignmentId]: null }));
     } catch (error) {
       console.error('Error submitting assignment:', error);
-      alert('Failed to submit assignment');
+      alert(error.response?.data?.message || 'Failed to submit assignment');
     }
   };
 
@@ -73,10 +77,7 @@ const StudentAssignments = () => {
         component="h1"
         gutterBottom
         align="center"
-        sx={{
-          marginTop: '2rem',
-          marginBottom: '2rem',
-        }}
+        sx={{ marginTop: '2rem', marginBottom: '2rem' }}
       >
         My Assignments
       </Typography>
@@ -93,14 +94,13 @@ const StudentAssignments = () => {
                   </Typography>
                   {assignment.assignmentFile && (
                     <a
-                    href={`http://localhost:5000/${assignment.assignmentFile}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ display: 'block', margin: '10px 0' }}
-                  >
-                    {assignment.assignmentFile.split('/').pop()}
-                  </a>
-                  
+                      href={`http://localhost:5000/${assignment.assignmentFile}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ display: 'block', margin: '10px 0' }}
+                    >
+                      Download Assignment File
+                    </a>
                   )}
                   <TextField
                     label="Submission Text"

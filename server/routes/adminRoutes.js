@@ -3,8 +3,26 @@ const User = require('../models/User');
 const Course = require('../models/Course');
 const Quiz = require('../models/Quiz');
 const { verifyToken, isAdmin } = require('../middleware/authMiddleware');
-
+const authenticate = require('../middleware/authenticate');
 const router = express.Router();
+
+router.get('/:courseName/students', async (req, res) => {
+  const { courseName } = req.params;
+
+  try {
+    const course = await Course.findOne({ name: courseName }, { students: 1, _id: 0 });
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+
+    res.status(200).json(course.students); // Return the array of students
+  } catch (error) {
+    console.error('Error fetching students:', error);
+    res.status(500).json({ message: 'Server error while fetching students.' });
+  }
+});
+
+
 
 // Get all users
 router.get('/users', verifyToken, isAdmin, async (req, res) => {
@@ -43,11 +61,14 @@ router.get('/quizzes', verifyToken, isAdmin, async (req, res) => {
   }
 });
 
+
 // Fetch students enrolled in a course
 router.get('/students', verifyToken, isAdmin, async (req, res) => {
   const { courseName } = req.query;
   try {
     const course = await Course.findOne({ name: courseName }).populate('students', 'name email');
+    console.log('Populated students:', course.students);
+
     if (!course) {
       return res.status(404).json({ message: 'Course not found.' });
     }
@@ -83,7 +104,5 @@ router.get('/submissions', verifyToken, isAdmin, async (req, res) => {
     res.status(500).json({ message: 'Server error fetching submissions.' });
   }
 });
-
-
 
 module.exports = router;
