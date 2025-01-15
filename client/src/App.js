@@ -19,6 +19,7 @@ import AdminAssignments from './components/AdminAssignment';
 import FormBuilder from './components/FormBuilder';
 import StudentQuizDashboard from './components/StudentQuizDashboard';
 import LecturerSubmissions from './components/AdminSubmissions';
+import PlagiarismChecker from './components/PlagiarismDetection';
 function App() {
   return (
     <AuthProvider>
@@ -43,7 +44,7 @@ function App() {
           <Route path="/quiz-submissions" element={<LecturerSubmissions />} />
           {/* <Route path="/student/quiz/:quizId" element={<TakeQuiz />} /> */}
           <Route path="/quiz-dashboard" element={<StudentQuizDashboard />} />
-          
+          <Route path="/plagiarism-detection" element={<PlagiarismChecker />} />
         </Routes>
       </Router>
     </AuthProvider>
