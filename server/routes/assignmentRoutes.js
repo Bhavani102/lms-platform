@@ -134,4 +134,26 @@ router.get('/:courseName/submissions', authenticate, async (req, res) => {
   }
 });
 
+// Route to fetch assignments by course name
+router.get('/admin/assignments', async (req, res) => {
+  const { courseName } = req.query;
+
+  try {
+    if (!courseName) {
+      return res.status(400).json({ message: 'Course name is required.' });
+    }
+
+    const assignments = await Assignment.find({ courseName });
+
+    if (assignments.length === 0) {
+      return res.status(404).json({ message: 'No assignments found for this course.' });
+    }
+
+    res.status(200).json(assignments);
+  } catch (error) {
+    console.error('Error fetching assignments:', error);
+    res.status(500).json({ message: 'Server error fetching assignments.' });
+  }
+});
+
 module.exports = router;

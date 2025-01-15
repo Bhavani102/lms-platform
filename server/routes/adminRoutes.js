@@ -2,6 +2,7 @@ const express = require('express');
 const User = require('../models/User');
 const Course = require('../models/Course');
 const Quiz = require('../models/Quiz');
+const Assignment = require('../models/Assignment');
 const { verifyToken, isAdmin } = require('../middleware/authMiddleware');
 const authenticate = require('../middleware/authenticate');
 const router = express.Router();
@@ -105,4 +106,21 @@ router.get('/submissions', verifyToken, isAdmin, async (req, res) => {
   }
 });
 
+router.get('/assignments', async (req, res) => {
+  const { courseName } = req.query;
+  console.log('Assignments route hit');
+  if (!courseName) {
+      return res.status(400).json({ message: 'Course name is required.' });
+  }
+  try {
+      const assignments = await Assignment.find({ courseName });
+      if (!assignments.length) {
+          return res.status(404).json({ message: 'No assignments found for the selected course.' });
+      }
+      res.status(200).json(assignments);
+  } catch (error) {
+      console.error('Error fetching assignments:', error);
+      res.status(500).json({ message: 'Server error fetching assignments.' });
+  }
+});
 module.exports = router;

@@ -206,6 +206,23 @@ const AdminDashboard = () => {
             </CardActionArea>
           </Card>
         </Grid>
+        <Grid item xs={12} sm={6} md={3}>
+          <Card onClick={() => handleNavigation('/plagiarism-detection')}>
+            <CardActionArea>
+              <CardContent>
+                <Box display="flex" flexDirection="column" alignItems="center">
+                  <ContentPasteIcon fontSize="large" color="primary" />
+                  <Typography variant="h6" component="div" align="center" gutterBottom>
+                    Plagiarism Detection
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" align="center">
+                    Check Similarity Scores of Student Assignments.
+                  </Typography>
+                </Box>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Grid>
       </Grid>
     </Container>
   );

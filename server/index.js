@@ -11,6 +11,7 @@ const quizRoutes = require('./routes/quizRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const authenticate = require('./middleware/authenticate');
 const path = require('path');
+const plagiarismRoutes=require('./routes/PlagiarismRoutes');
 
 dotenv.config();
 const app = express();
@@ -56,6 +57,8 @@ try {
   app.use('/api/quizzes',quizRoutes);
   console.log("Quiz routes loaded succesfully");
 
+  app.use('/api/plagiarism',plagiarismRoutes);
+  console.log("Plagiarism routes loaded succesfully");
   
 } catch (error) {
   console.error("Error loading routes:", error.message);
