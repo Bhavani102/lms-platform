@@ -189,9 +189,10 @@ const AdminDashboard = () => {
           </Card>
         </Grid>
 
-        {/* Card 7: Quiz submissions */}
-      <Grid item xs={12} sm={6} md={3}>
-          <Card onClick={() => handleNavigation('/plagiarism-detection')}>
+      
+        {/* card 8- Assignment submissions*/}
+        <Grid item xs={12} sm={6} md={3}>
+          <Card onClick={() => handleNavigation('/assignment-submissions')}>
             <CardActionArea>
               <CardContent>
                 <Box display="flex" flexDirection="column" alignItems="center">
@@ -201,6 +202,10 @@ const AdminDashboard = () => {
                   </Typography>
                   <Typography variant="body2" color="textSecondary" align="center">
                     Check plagiarism for submitted assignments.
+                    Assignment Submissions
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary" align="center">
+                    View Submitted Student Assignments.
                   </Typography>
                 </Box>
               </CardContent>

@@ -27,8 +27,9 @@ const CourseEnrollment = () => {
 
   const handleEnroll = async (courseName) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/enrollments', {
+      const response = await axios.post('http://localhost:5000/api/courses/enroll', {
         studentEmail: user.email,  // Use user.email from context
+        studentName:user.name,
         courseName,
       });
       alert(response.data.message);

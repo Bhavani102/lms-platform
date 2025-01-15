@@ -9,6 +9,7 @@ const assignmentSchema = new mongoose.Schema({
   submissions: [
     {
       studentEmail: { type: String, required: true },
+      studentName: { type: String, required: true },
       submittedText: { type: String },
       submittedFile: { type: String },
       submittedAt: { type: Date, default: Date.now },

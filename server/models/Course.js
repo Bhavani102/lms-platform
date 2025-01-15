@@ -5,7 +5,12 @@ const courseSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
   instructor: { type: String, required: true },
-  students: [{ type: String }],
+  students: [
+    {
+      email: { type: String, required: true },
+      name: { type: String, required: true },
+    },
+  ],
   content: [
     {
       type: { type: String, required: true },
