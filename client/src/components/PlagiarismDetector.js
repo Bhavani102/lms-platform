@@ -70,9 +70,7 @@ const PlagiarismDetector = () => {
     try {
       const response = await axios.get(
         `http://localhost:5000/api/plagiarism/plagiarism-export/${selectedAssignment}`,
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` },
-        }
+        { headers: { Authorization: `Bearer ${localStorage.getItem('authToken')}` } }
       );
 
       const link = document.createElement('a');
@@ -85,15 +83,17 @@ const PlagiarismDetector = () => {
       alert('Plagiarism report exported successfully!');
     } catch (error) {
       console.error('Error exporting plagiarism report:', error);
+      alert('Failed to export plagiarism report.');
     }
   };
 
   return (
     <Container maxWidth="lg">
-      <Typography variant="h4" align="center" gutterBottom>
+      <Typography variant="h4" align="center" gutterBottom sx={{ mt: 3, mb: 3 }}>
         Plagiarism Detector
       </Typography>
       <Grid container spacing={3}>
+        {/* Course Dropdown */}
         <Grid item xs={12} sm={6}>
           <Typography variant="h6">Select Course</Typography>
           <Select
@@ -116,6 +116,7 @@ const PlagiarismDetector = () => {
             ))}
           </Select>
         </Grid>
+        {/* Fetch Assignments Button */}
         <Grid item xs={12} sm={6}>
           <Button
             variant="contained"
@@ -127,6 +128,7 @@ const PlagiarismDetector = () => {
             Fetch Assignments
           </Button>
         </Grid>
+        {/* Assignment Dropdown */}
         {assignments.length > 0 && (
           <Grid item xs={12}>
             <Typography variant="h6">Select Assignment</Typography>
@@ -149,6 +151,7 @@ const PlagiarismDetector = () => {
             </Select>
           </Grid>
         )}
+        {/* Check Plagiarism Button */}
         {selectedAssignment && (
           <Grid item xs={12}>
             <Button
@@ -161,14 +164,19 @@ const PlagiarismDetector = () => {
             </Button>
           </Grid>
         )}
+        {/* Results Table */}
         {plagiarismResults.length > 0 && (
           <Grid item xs={12}>
+            <Typography variant="h6" align="center" gutterBottom>
+              Plagiarism Results
+            </Typography>
             <Table>
               <TableHead>
                 <TableRow>
                   <TableCell>Student 1</TableCell>
                   <TableCell>Student 2</TableCell>
-                  <TableCell>Similarity Score</TableCell>
+                  <TableCell>Text Similarity (%)</TableCell>
+                  <TableCell>Code Similarity (%)</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -176,25 +184,23 @@ const PlagiarismDetector = () => {
                   <TableRow key={index}>
                     <TableCell>{result.student1}</TableCell>
                     <TableCell>{result.student2}</TableCell>
-                    <TableCell>{result.similarityScore}%</TableCell>
+                    <TableCell>{result.textSimilarity}%</TableCell>
+                    <TableCell>{result.codeSimilarity}%</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </Grid>
         )}
+        {/* Export to Excel Button */}
         {plagiarismResults.length > 0 && (
           <Grid item xs={12}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleExportToExcel}
-              fullWidth
-            >
+            <Button variant="contained" color="primary" onClick={handleExportToExcel} fullWidth>
               Export to Excel
             </Button>
           </Grid>
         )}
+        {/* Loading Spinner */}
         {loading && (
           <Grid item xs={12} align="center">
             <CircularProgress />
