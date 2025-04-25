@@ -19,12 +19,10 @@ A full-featured web-based Learning Management System that provides a one-stop so
 ## 🛠️ Tech Stack
 
 - **Frontend**: ReactJS, Material-UI (MUI)  
-- **Routing**: React Router  
-- **AI Chatbot**: OpenAI API (or any LLM of your choice)  
-- **Backend**: *To be integrated* (e.g., Node.js, Express)  
-- **Database**: *To be integrated* (e.g., MongoDB, MySQL)  
+- **Routing**: React Router   
+- **Backend**:  Node.js, Express 
+- **Database**: MongoDB
 
 ---
 
-## 📂 Folder Structure
 
