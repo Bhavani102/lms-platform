@@ -5,14 +5,12 @@ import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardActionArea from '@mui/material/CardActionArea';
-import { Box, Button } from '@mui/material';
+import { Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
-// Icon imports
 import SchoolIcon from '@mui/icons-material/School';
 import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
-import SettingsIcon from '@mui/icons-material/Settings';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import QuizIcon from '@mui/icons-material/Quiz';
 
@@ -23,206 +21,107 @@ const AdminDashboard = () => {
     navigate(path);
   };
 
+  const cardStyle = {
+    height: '100%',
+    minHeight: '150px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+  };
+
+  const cardContentStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    textAlign: 'center',
+    height: '100%',
+    padding: '16px',
+  };
+
   return (
     <Container maxWidth="lg">
-      <Typography
-        variant="h4"
-        component="h1"
-        gutterBottom
-        align="center"
-        sx={{
-          //fontFamily: 'Roboto, sans-serif',
-          //fontWeight: 'bold',
-          marginTop: '2rem',
-          marginBottom: '2rem',
-        }}
-      >
+      <Typography variant="h4" align="center" gutterBottom sx={{ mt: 4, mb: 4 }}>
         Admin Dashboard
       </Typography>
       <Grid container spacing={3}>
-        {/* Card 1: Course Creation */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Card onClick={() => handleNavigation('/create-course')}>
-            <CardActionArea>
-              <CardContent>
-                <Box display="flex" flexDirection="column" alignItems="center">
-                  <SchoolIcon fontSize="large" color="primary" />
-                  <Typography variant="h6" component="div" align="center" gutterBottom>
-                    Course Creation
+        {[
+          {
+            icon: <SchoolIcon fontSize="large" color="primary" />,
+            title: 'Course Creation',
+            desc: 'Create and manage courses.',
+            path: '/create-course',
+          },
+          {
+            icon: <AssignmentIcon fontSize="large" color="primary" />,
+            title: 'Assignments',
+            desc: 'View and submit assignments.',
+            path: '/admin-assignments',
+          },
+          {
+            icon: <PeopleIcon fontSize="large" color="primary" />,
+            title: 'User Management',
+            desc: 'Manage users and permissions.',
+            path: '/user-management',
+          },
+          {
+            icon: <AssessmentIcon fontSize="large" color="primary" />,
+            title: 'Reports',
+            desc: 'View detailed reports and insights.',
+            path: '/reports',
+          },
+          {
+            icon: <ContentPasteIcon fontSize="large" color="primary" />,
+            title: 'Manage Courses',
+            desc: 'Manage and update course content.',
+            path: '/manage-courses',
+          },
+          {
+            icon: <QuizIcon fontSize="large" color="primary" />,
+            title: 'Post Quiz',
+            desc: 'Quiz Management for your courses.',
+            path: '/admin/post-quiz',
+          },
+          {
+            icon: <ContentPasteIcon fontSize="large" color="primary" />,
+            title: 'Quiz Submissions',
+            desc: 'View Submitted Student Drafts.',
+            path: '/quiz-submissions',
+          },
+          {
+            icon: <ContentPasteIcon fontSize="large" color="primary" />,
+            title: 'Assignment Submissions',
+            desc: 'View Submitted Assignments.',
+            path: '/assignment-submissions',
+          },
+          {
+            icon: <ContentPasteIcon fontSize="large" color="primary" />,
+            title: 'Plagiarism Detection',
+            desc: 'Check Similarity Scores of Student Assignments.',
+            path: '/plagiarism-detection',
+          },
+          {
+            icon: <ContentPasteIcon fontSize="large" color="primary" />,
+            title: 'AI Chatbot',
+            desc: 'Integrated AI Chatbot to answer queries of Instructors & Students.',
+            path: '/Chatbot',
+          },
+        ].map((card, index) => (
+          <Grid item xs={12} sm={6} md={3} key={index}>
+            <Card onClick={() => handleNavigation(card.path)} sx={cardStyle}>
+              <CardActionArea sx={{ height: '100%' }}>
+                <CardContent sx={cardContentStyle}>
+                  {card.icon}
+                  <Typography variant="h6" gutterBottom sx={{ mt: 1 }}>
+                    {card.title}
                   </Typography>
-                  <Typography variant="body2" color="textSecondary" align="center">
-                    Create and manage courses.
+                  <Typography variant="body2" color="textSecondary" sx={{ wordBreak: 'break-word' }}>
+                    {card.desc}
                   </Typography>
-                </Box>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </Grid>
-        {/* Card 2: Assignments */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Card onClick={() => handleNavigation('/admin-assignments')}>
-            <CardActionArea>
-              <CardContent>
-                <Box display="flex" flexDirection="column" alignItems="center">
-                  <AssignmentIcon fontSize="large" color="primary" />
-                  <Typography variant="h6" component="div" align="center" gutterBottom>
-                    Assignments
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary" align="center">
-                    View and submit assignments.
-                  </Typography>
-                </Box>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </Grid>
-        {/* Card 2: User Management */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Card onClick={() => handleNavigation('/user-management')}>
-            <CardActionArea>
-              <CardContent>
-                <Box display="flex" flexDirection="column" alignItems="center">
-                  <PeopleIcon fontSize="large" color="primary" />
-                  <Typography variant="h6" component="div" align="center" gutterBottom>
-                    User Management
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary" align="center">
-                    Manage users and permissions.
-                  </Typography>
-                </Box>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </Grid>
-
-        {/* Card 3: Reports */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Card onClick={() => handleNavigation('/reports')}>
-            <CardActionArea>
-              <CardContent>
-                <Box display="flex" flexDirection="column" alignItems="center">
-                  <AssessmentIcon fontSize="large" color="primary" />
-                  <Typography variant="h6" component="div" align="center" gutterBottom>
-                    Reports
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary" align="center">
-                    View detailed reports and insights.
-                  </Typography>
-                </Box>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </Grid>
-
-        {/* Card 4: Settings */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Card onClick={() => handleNavigation('/settings')}>
-            <CardActionArea>
-              <CardContent>
-                <Box display="flex" flexDirection="column" alignItems="center">
-                  <SettingsIcon fontSize="large" color="primary" />
-                  <Typography variant="h6" component="div" align="center" gutterBottom>
-                    Settings
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary" align="center">
-                    Adjust application settings.
-                  </Typography>
-                </Box>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </Grid>
-        
-        {/* Card 5: Manage Courses */}
-        <Grid item xs={12} sm={6} md={3}>
-          <Card onClick={() => handleNavigation('/manage-courses')}>
-            <CardActionArea>
-              <CardContent>
-                <Box display="flex" flexDirection="column" alignItems="center">
-                  <ContentPasteIcon fontSize="large" color="primary" />
-                  <Typography variant="h6" component="div" align="center" gutterBottom>
-                    Manage Courses
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary" align="center">
-                    Manage and update course content.
-                  </Typography>
-                </Box>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3}>
-        <Card onClick={() => navigate("/admin/post-quiz")}>
-          <CardActionArea>
-            <CardContent>
-              <Box display="flex" flexDirection="column" alignItems="center">
-                <QuizIcon fontSize="large" color="primary" />
-                <Typography variant="h6" component="div" align="center" gutterBottom>
-                  Post Quiz
-                </Typography>
-                <Typography variant="body2" color="textSecondary" align="center">
-                  Quiz Management for your courses.
-                </Typography>
-              </Box>
-            </CardContent>
-          </CardActionArea>
-        </Card>
-      </Grid>
-
-      {/* Card 7: Quiz submissions */}
-      <Grid item xs={12} sm={6} md={3}>
-          <Card onClick={() => handleNavigation('/quiz-submissions')}>
-            <CardActionArea>
-              <CardContent>
-                <Box display="flex" flexDirection="column" alignItems="center">
-                  <ContentPasteIcon fontSize="large" color="primary" />
-                  <Typography variant="h6" component="div" align="center" gutterBottom>
-                    Quiz Submissions
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary" align="center">
-                    View Submitted Student Drafts.
-                  </Typography>
-                </Box>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </Grid>
-        {/* card 8- Assignment submissions*/}
-        <Grid item xs={12} sm={6} md={3}>
-          <Card onClick={() => handleNavigation('/assignment-submissions')}>
-            <CardActionArea>
-              <CardContent>
-                <Box display="flex" flexDirection="column" alignItems="center">
-                  <ContentPasteIcon fontSize="large" color="primary" />
-                  <Typography variant="h6" component="div" align="center" gutterBottom>
-                    Assignment Submissions
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary" align="center">
-                    View Submitted Student Assignments.
-                  </Typography>
-                </Box>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          <Card onClick={() => handleNavigation('/plagiarism-detection')}>
-            <CardActionArea>
-              <CardContent>
-                <Box display="flex" flexDirection="column" alignItems="center">
-                  <ContentPasteIcon fontSize="large" color="primary" />
-                  <Typography variant="h6" component="div" align="center" gutterBottom>
-                    Plagiarism Detection
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary" align="center">
-                    Check Similarity Scores of Student Assignments.
-                  </Typography>
-                </Box>
-              </CardContent>
-            </CardActionArea>
-          </Card>
-        </Grid>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          </Grid>
+        ))}
       </Grid>
     </Container>
   );

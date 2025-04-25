@@ -1,0 +1,2103 @@
+[
+    {
+        "qId": "wqr020001",
+        "answers": [
+            "The fork() system call in UNIX is used to create a new child process by duplicating the calling process. When a process calls fork(), the operating system creates a new process that is an exact copy of the parent, including memory, registers, and open file descriptors. The child process runs as an independent entity and does not share memory space with the parent.After fork(), both the parent and child processes start execution from the same instruction. However, they can be distinguished by their return values from fork(). This allows them to execute different sections of code if necessary."
+        ],
+        "qText": "What is the fork() system call in UNIX?"
+    },
+    {
+        "qId": "wqr020002",
+        "answers": [
+            "The fork() system call returns different values in the parent and child processes to differentiate between them. In the parent process, fork() returns the process ID (PID) of the child. In the child process, fork() returns 0. If the fork() call fails, it returns -1 to indicate an error, which usually happens when the system runs out of process resources.\n\nBy checking the return value of fork(), a program can determine whether it is executing as the parent or the child and perform different actions accordingly.\n\nExample:\n```c\n#include <stdio.h>\n#include <unistd.h>\nint main() {\n    int pid = fork();\n    if (pid > 0)\n        printf(\"Parent process. Child PID: %d\\n\", pid);\n    else if (pid == 0)\n        printf(\"Child process. PID: %d\\n\", getpid());\n    else\n        printf(\"Fork failed!\\n\");\n    return 0;\n}\n```"
+        ],
+        "qText": "How does fork() differentiate between the parent and child process?"
+    },
+    {
+        "qId": "wqr020003",
+        "answers": [
+            "The exec() system call replaces the current process image with a new program. When a process calls exec(), it loads a new program into memory and starts executing it, effectively replacing the original program. Unlike fork(), exec() does not create a new process; instead, it transforms the existing process.\n\nIf exec() is successful, it does not return; if there is an error (e.g., if the specified program does not exist), exec() returns -1, and the process continues execution from the next instruction.\n\nExample:\n```c\n#include <stdio.h>\n#include <unistd.h>\nint main() {\n    char *args[] = {\"/bin/ls\", \"-l\", NULL};\n    execvp(args[0], args);\n    printf(\"This will not print if exec() is successful.\\n\");\n    return 0;\n}\n```"
+        ],
+        "qText": "What does the exec() system call do in UNIX?"
+    },
+    {
+        "qId": "wqr020004",
+        "answers": [
+            "The wait() system call is used by a parent process to pause execution until one of its child processes finishes. This ensures that the parent does not proceed before its child terminates, preventing orphaned processes and ensuring proper resource management.\n\nWhen a parent calls wait(), it is suspended until any of its child processes exit. The return value of wait() is the process ID of the terminated child. If there are no child processes, wait() returns -1 immediately.\n\nExample:\n```c\n#include <stdio.h>\n#include <sys/types.h>\n#include <sys/wait.h>\n#include <unistd.h>\nint main() {\n    pid_t pid = fork();\n    if (pid > 0) {\n        wait(NULL);\n        printf(\"Parent: Child process finished.\\n\");\n    } else if (pid == 0) {\n        printf(\"Child: Executing.\\n\");\n    }\n    return 0;\n}\n```"
+        ],
+        "qText": "What is the purpose of the wait() system call?"
+    },
+    {
+        "qId": "wqr020005",
+        "answers": [
+            "The output order of fork() is non-deterministic because process scheduling is managed by the operating system. When a process calls fork(), the parent and child execute independently, and their execution order depends on factors like CPU availability, priority, and system load.\n\nSince there is no guarantee which process will execute first, the order of printed output may vary each time the program runs.\n\nExample:\n```c\n#include <stdio.h>\n#include <unistd.h>\nint main() {\n    fork();\n    printf(\"Hello\\n\");\n    return 0;\n}\n```\n\nIn this program, 'Hello' can be printed twice in any order depending on how the operating system schedules the processes."
+        ],
+        "qText": "Why is the output order of fork() non-deterministic?"
+    },
+    {
+        "qId": "wqr020006",
+        "answers": [
+            "A simple C program that uses fork() to print 'Hello' twice is given below. Since fork() creates a child process, both the parent and child will execute the printf() statement, resulting in 'Hello' being printed twice.\n\nExample:\n```c\n#include <stdio.h>\n#include <unistd.h>\nint main() {\n    fork();\n    printf(\"Hello\\n\");\n    return 0;\n}\n```"
+        ],
+        "qText": "Write a simple C program using fork() to print 'Hello' twice."
+    },
+    {
+        "qId": "wqr020007",
+        "answers": [
+            "The following C program differentiates between the parent and child process using the return value of fork(). The parent prints 'Parent', while the child prints 'Child'.\n\nExample:\n```c\n#include <stdio.h>\n#include <unistd.h>\nint main() {\n    int rc = fork();\n    if (rc == 0)\n        printf(\"Child\\n\");\n    else\n        printf(\"Parent\\n\");\n    return 0;\n}\n```"
+        ],
+        "qText": "Write a C program that prints 'Parent' in the parent process and 'Child' in the child process."
+    },
+    {
+        "qId": "wqr020008",
+        "answers": [
+            "No, the child process does not get the same PID as the parent. When a process calls fork(), the child process is assigned a unique process ID (PID) by the operating system, which is different from the parent's PID. However, the child process inherits many attributes from the parent, such as open file descriptors and environment variables."
+        ],
+        "qText": "Does the child process get the same PID as the parent after fork()?"
+    },
+    {
+        "qId": "wqr020009",
+        "answers": [
+            "A program with two fork() calls creates four processes in total because each fork() doubles the number of processes. The output statement is executed by all four processes, so 'Process' is printed four times.\n\nExample:\n```c\n#include <stdio.h>\n#include <unistd.h>\nint main() {\n    fork();\n    fork();\n    printf(\"Process\\n\");\n    return 0;\n}\n```"
+        ],
+        "qText": "Write a program using two fork() calls. How many times will 'Process' print?"
+    },
+    {
+        "qId": "wqr020010",
+        "answers": [
+            "If fork() fails, it returns -1, and no child process is created. This typically happens if the system runs out of process resources, such as reaching the maximum number of allowed processes.\n\nExample:\n```c\n#include <stdio.h>\n#include <unistd.h>\nint main() {\n    int pid = fork();\n    if (pid == -1)\n        printf(\"Fork failed!\\n\");\n    return 0;\n}\n```"
+        ],
+        "qText": "What happens if fork() fails?"
+     },
+    {
+        "qId": "wqr020012",
+        "answers": [
+            "The `exec()` family of functions replaces the current process image with a new program. To execute `ls` in the child process, we use `execlp()`, which searches for the executable in the system's `PATH`.",
+            "### Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <unistd.h>",
+            "#include <sys/types.h>",
+            "#include <sys/wait.h>",
+            "",
+            "int main() {",
+            "    pid_t pid = fork(); // Create a child process",
+            "",
+            "    if (pid < 0) {",
+            "        perror(\"Fork failed\");",
+            "        return 1;",
+            "    }",
+            "",
+            "    if (pid == 0) { ",
+            "        // Child process",
+            "        execlp(\"ls\", \"ls\", NULL);",
+            "        perror(\"execlp failed\"); // If exec fails",
+            "        return 1;",
+            "    } else {",
+            "        // Parent process",
+            "        wait(NULL); // Wait for child to complete",
+            "        printf(\"Child process finished, parent terminating.\\n\");",
+            "    }",
+            "    return 0;",
+            "}",
+            "```",
+            "### Explanation:",
+            "- The parent process creates a child using `fork()`.",
+            "- The child process replaces itself with `ls` using `execlp(\"ls\", \"ls\", NULL)`.",
+            "- If `exec()` fails, it prints an error message and exits with a failure code.",
+            "- The parent process waits for the child using `wait(NULL)` to avoid creating a zombie process."
+        ],
+        "qText": "Write a C program where the child process executes 'ls' using exec()."
+    },
+    {
+        "qId": "wqr020013",
+        "answers": [
+            "If a parent process terminates before its child process, the child becomes an **orphan process**. In UNIX-like operating systems, orphan processes are automatically adopted by the `init` process (PID 1).",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <stdlib.h>",
+            "#include <unistd.h>",
+            "",
+            "int main() {",
+            "    pid_t pid = fork();",
+            "",
+            "    if (pid < 0) {",
+            "        perror(\"Fork failed\");",
+            "        return 1;",
+            "    }",
+            "",
+            "    if (pid == 0) {",
+            "        sleep(5); // Simulate some work in the child process",
+            "        printf(\"Child process (PID: %d), Parent (PID: %d)\\n\", getpid(), getppid());",
+            "    } else {",
+            "        printf(\"Parent process (PID: %d) exiting...\\n\", getpid());",
+            "        exit(0);",
+            "    }",
+            "    return 0;",
+            "}",
+            "```",
+            "### Output (example):",
+            "```\nParent process (PID: 1234) exiting...",
+            "Child process (PID: 1235), Parent (PID: 1)\n```",
+            "As seen in the output, after the parent process exits, the child process is adopted by `init`, which gets a new parent PID of `1`."
+        ],
+        "qText": "What happens if the parent process terminates before the child?"
+    },
+    {
+        "qId": "wqr020014",
+        "answers": [
+            "A **zombie process** is a child process that has completed execution but has not been reaped by its parent using `wait()`. It remains in the process table as a 'defunct' process until its parent retrieves its exit status.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <stdlib.h>",
+            "#include <unistd.h>",
+            "",
+            "int main() {",
+            "    pid_t pid = fork();",
+            "",
+            "    if (pid < 0) {",
+            "        perror(\"Fork failed\");",
+            "        return 1;",
+            "    }",
+            "",
+            "    if (pid == 0) {",
+            "        printf(\"Child process exiting...\\n\");",
+            "        exit(0);",
+            "    } else {",
+            "        sleep(5); // Parent does not call wait(), causing a zombie process",
+            "        system(\"ps -l | grep Z\"); // Check for zombie process",
+            "    }",
+            "    return 0;",
+            "}",
+            "```",
+            "### Explanation:",
+            "- The child process exits immediately.",
+            "- The parent does not call `wait()`, so the child remains in the process table as a zombie.",
+            "- Running `ps -l` will show a process with `Z` status, indicating it's a zombie."
+        ],
+        "qText": "What is a zombie process?"
+    },
+    {
+        "qId": "wqr020015",
+        "answers": [
+            "The `exec()` family consists of several functions that allow process replacement with different argument-passing mechanisms. The main variants are:",
+            "- `execl()`: Takes a variable-length argument list (NULL-terminated).",
+            "- `execv()`: Takes an array of arguments instead of a variable-length list.",
+            "- `execlp()`: Works like `execl()`, but searches for the program in `PATH`.",
+            "- `execvp()`: Works like `execv()`, but searches in `PATH`.",
+            "- `execle()`: Like `execl()`, but also allows specifying the environment.",
+            "- `execve()`: Like `execv()`, but with an environment array.",
+            "### Example Code Using execvp:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <stdlib.h>",
+            "#include <unistd.h>",
+            "",
+            "int main() {",
+            "    char *args[] = {\"ls\", \"-l\", NULL};",
+            "    execvp(args[0], args);",
+            "    perror(\"execvp failed\");",
+            "    return 1;",
+            "}",
+            "```",
+            "### Explanation:",
+            "- This program replaces itself with `ls -l` using `execvp()`.",
+            "- `execvp()` searches for `ls` in the `PATH` and executes it.",
+            "- If the function fails, it prints an error message."
+        ],
+        "qText": "What are the different variants of exec()?"
+    },
+    
+    {
+        "qId": "wqr020016",
+        "answers": [
+            "To ensure that the parent process waits for the child process to terminate before continuing execution, we use the `wait()` system call. This prevents zombie processes and ensures proper synchronization.",
+            "### Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <unistd.h>",
+            "#include <sys/types.h>",
+            "#include <sys/wait.h>",
+            "",
+            "int main() {",
+            "    pid_t pid = fork();",
+            "",
+            "    if (pid < 0) {",
+            "        perror(\"Fork failed\");",
+            "        return 1;",
+            "    }",
+            "",
+            "    if (pid == 0) {",
+            "        printf(\"Child process executing...\\n\");",
+            "        sleep(2); // Simulating some work",
+            "        printf(\"Child process finished.\\n\");",
+            "    } else {",
+            "        wait(NULL); // Parent waits for child",
+            "        printf(\"Parent process executing after child terminates.\\n\");",
+            "    }",
+            "    return 0;",
+            "}",
+            "```",
+            "### Explanation:",
+            "- The parent forks a child process.",
+            "- The child prints a message and then sleeps to simulate work.",
+            "- The parent waits for the child using `wait(NULL)`.",
+            "- Once the child terminates, the parent resumes execution."
+        ],
+        "qText": "Write a C program where the parent waits for the child before terminating."
+    },
+    {
+        "qId": "wqr020017",
+        "answers": [
+            "Interleaving occurs when multiple processes execute independently, and their outputs appear mixed due to the scheduler. The operating system's CPU scheduler decides when each process runs, leading to unpredictable execution orders.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <unistd.h>",
+            "#include <sys/types.h>",
+            "",
+            "int main() {",
+            "    pid_t pid = fork();",
+            "",
+            "    if (pid < 0) {",
+            "        perror(\"Fork failed\");",
+            "        return 1;",
+            "    }",
+            "",
+            "    if (pid == 0) {",
+            "        for (int i = 0; i < 5; i++) {",
+            "            printf(\"Child process executing: %d\\n\", i);",
+            "            usleep(100000); // Short delay",
+            "        }",
+            "    } else {",
+            "        for (int i = 0; i < 5; i++) {",
+            "            printf(\"Parent process executing: %d\\n\", i);",
+            "            usleep(100000); // Short delay",
+            "        }",
+            "    }",
+            "    return 0;",
+            "}",
+            "```",
+            "### Expected Output (example, order may vary due to interleaving):",
+            "```\nParent process executing: 0",
+            "Child process executing: 0",
+            "Parent process executing: 1",
+            "Child process executing: 1",
+            "... (order varies depending on CPU scheduling)",
+            "```",
+            "Interleaving happens because the OS scheduler switches between the parent and child, making the output appear mixed."
+        ],
+        "qText": "What is interleaving in process execution?"
+    },
+    {
+        "qId": "wqr020018",
+        "answers": [
+            "The `wait()` system call suspends the execution of the parent process until one of its child processes terminates. It then returns the **PID of the terminated child process**.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <unistd.h>",
+            "#include <sys/types.h>",
+            "#include <sys/wait.h>",
+            "",
+            "int main() {",
+            "    pid_t pid = fork();",
+            "",
+            "    if (pid < 0) {",
+            "        perror(\"Fork failed\");",
+            "        return 1;",
+            "    }",
+            "",
+            "    if (pid == 0) {",
+            "        printf(\"Child process running (PID: %d)\\n\", getpid());",
+            "        sleep(2);",
+            "        printf(\"Child process exiting.\\n\");",
+            "        return 42; // Child exits with status 42",
+            "    } else {",
+            "        int status;",
+            "        pid_t child_pid = wait(&status);",
+            "        printf(\"Parent: Child with PID %d terminated.\\n\", child_pid);",
+            "        if (WIFEXITED(status)) {",
+            "            printf(\"Child exited with status: %d\\n\", WEXITSTATUS(status));",
+            "        }",
+            "    }",
+            "    return 0;",
+            "}",
+            "```",
+            "### Explanation:",
+            "- The `wait()` function blocks the parent until the child exits.",
+            "- It returns the PID of the child that terminated.",
+            "- The `WEXITSTATUS(status)` macro retrieves the child's exit status."
+        ],
+        "qText": "What does wait() return in UNIX?"
+    },
+    {
+        "qId": "wqr020019",
+        "answers": [
+            "A **fork bomb** is a malicious program that continuously creates child processes using `fork()`, overwhelming the system's process table and making it unresponsive.",
+            "### Example Code (DO NOT RUN):",
+            "```c",
+            "#include <unistd.h>",
+            "int main() {",
+            "    while (1) {",
+            "        fork();",
+            "    }",
+            "    return 0;",
+            "}",
+            "```",
+            "### Explanation:",
+            "- Each process continuously creates more child processes.",
+            "- This exponentially increases the number of processes, consuming all available process slots.",
+            "- The system slows down and eventually crashes due to process exhaustion.",
+            "### Prevention:",
+            "- Use **ulimit -u** to limit the maximum number of processes per user.",
+            "- Monitor and restrict user permissions."
+        ],
+        "qText": "What is a fork bomb?"
+    },
+    {
+        "qId": "wqr020020",
+        "answers": [
+            "An **orphan process** is a child process whose parent has terminated before it. In UNIX-like systems, orphan processes are automatically reparented to `init` (PID 1), which becomes their new parent.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <stdlib.h>",
+            "#include <unistd.h>",
+            "",
+            "int main() {",
+            "    pid_t pid = fork();",
+            "",
+            "    if (pid < 0) {",
+            "        perror(\"Fork failed\");",
+            "        return 1;",
+            "    }",
+            "",
+            "    if (pid == 0) {",
+            "        sleep(5); // Simulating work",
+            "        printf(\"Child process (PID: %d), New Parent (PID: %d)\\n\", getpid(), getppid());",
+            "    } else {",
+            "        printf(\"Parent process (PID: %d) exiting...\\n\", getpid());",
+            "        exit(0);",
+            "    }",
+            "    return 0;",
+            "}",
+            "```",
+            "### Expected Output (example):",
+            "```\nParent process (PID: 1234) exiting...",
+            "Child process (PID: 1235), New Parent (PID: 1)\n```",
+            "As seen in the output, when the parent exits, the child is adopted by `init` (PID 1)."
+        ],
+        "qText": "What are orphan processes in UNIX?"
+    },
+    {
+        "qId": "wqr020021",
+        "answers": [
+            "The `wait()` system call is used in UNIX-based systems to make a parent process wait until one of its child processes terminates. It ensures proper synchronization and prevents zombie processes.",
+            "### Purpose of `wait()`:",
+            "- Prevents the creation of **zombie processes** by allowing the parent to collect the child's exit status.",
+            "- Synchronizes process execution by ensuring the parent does not proceed until the child terminates.",
+            "- Returns the PID of the terminated child, helping manage multiple child processes.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <unistd.h>",
+            "#include <sys/types.h>",
+            "#include <sys/wait.h>",
+            "",
+            "int main() {",
+            "    pid_t pid = fork();",
+            "",
+            "    if (pid < 0) {",
+            "        perror(\"Fork failed\");",
+            "        return 1;",
+            "    }",
+            "",
+            "    if (pid == 0) {",
+            "        printf(\"Child process running (PID: %d)\\n\", getpid());",
+            "        sleep(2);",
+            "        printf(\"Child process terminating.\\n\");",
+            "    } else {",
+            "        int status;",
+            "        pid_t child_pid = wait(&status);",
+            "        printf(\"Parent: Child with PID %d terminated.\\n\", child_pid);",
+            "    }",
+            "    return 0;",
+            "}",
+            "```"
+        ],
+        "qText": "What is the purpose of the wait() system call in UNIX?"
+    },
+    {
+        "qId": "wqr020022",
+        "answers": [
+            "The `wait()` system call ensures that a parent process does not continue execution until its child process has finished. This enforces a deterministic execution order.",
+            "### Effects of `wait()` on Execution Order:",
+            "- Without `wait()`, the parent and child execute concurrently, leading to unpredictable output.",
+            "- With `wait()`, the parent process pauses until the child process completes, ensuring sequential execution.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <unistd.h>",
+            "#include <sys/types.h>",
+            "#include <sys/wait.h>",
+            "",
+            "int main() {",
+            "    pid_t pid = fork();",
+            "",
+            "    if (pid < 0) {",
+            "        perror(\"Fork failed\");",
+            "        return 1;",
+            "    }",
+            "",
+            "    if (pid == 0) {",
+            "        printf(\"Child executing first...\\n\");",
+            "        sleep(2);",
+            "        printf(\"Child finished.\\n\");",
+            "    } else {",
+            "        wait(NULL);",
+            "        printf(\"Parent executes after child.\\n\");",
+            "    }",
+            "    return 0;",
+            "}",
+            "```",
+            "### Output Without `wait()` (Unpredictable Order):",
+            "```\nParent executes after child.",
+            "Child executing first...",
+            "Child finished.\n```",
+            "### Output With `wait()` (Guaranteed Order):",
+            "```\nChild executing first...",
+            "Child finished.",
+            "Parent executes after child.\n```"
+        ],
+        "qText": "How does wait() affect process execution order?"
+    },
+    {
+        "qId": "wqr020023",
+        "answers": [
+            "To ensure that the parent process prints after the child process, the parent should use `wait()` to wait for the child to finish execution before printing.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <unistd.h>",
+            "#include <sys/types.h>",
+            "#include <sys/wait.h>",
+            "",
+            "int main() {",
+            "    pid_t pid = fork();",
+            "",
+            "    if (pid < 0) {",
+            "        perror(\"Fork failed\");",
+            "        return 1;",
+            "    }",
+            "",
+            "    if (pid == 0) {",
+            "        printf(\"Child process running\\n\");",
+            "    } else {",
+            "        wait(NULL);",
+            "        printf(\"Parent process running after child\\n\");",
+            "    }",
+            "    return 0;",
+            "}",
+            "```",
+            "### Explanation:",
+            "- The child prints **\"Child process running\"**.",
+            "- The parent waits for the child to finish before printing **\"Parent process running after child\"**."
+        ],
+        "qText": "Write a C program where the parent waits for the child to print first."
+    },
+    {
+        "qId": "wqr020024",
+        "answers": [
+            "The `wait()` system call returns the **PID of the terminated child process** or `-1` if there are no child processes left to wait for.",
+            "### Detailed Behavior:",
+            "- If a child terminates normally, `wait()` returns the child's PID.",
+            "- If there are multiple child processes, `wait()` returns when any one of them terminates.",
+            "- If there are no child processes left, `wait()` returns `-1`.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <unistd.h>",
+            "#include <sys/types.h>",
+            "#include <sys/wait.h>",
+            "",
+            "int main() {",
+            "    pid_t pid = fork();",
+            "",
+            "    if (pid < 0) {",
+            "        perror(\"Fork failed\");",
+            "        return 1;",
+            "    }",
+            "",
+            "    if (pid == 0) {",
+            "        printf(\"Child process (PID: %d) running\\n\", getpid());",
+            "        sleep(2);",
+            "        printf(\"Child terminating.\\n\");",
+            "        return 42; // Exit with status 42",
+            "    } else {",
+            "        int status;",
+            "        pid_t terminated_pid = wait(&status);",
+            "        printf(\"Parent: Child with PID %d terminated.\\n\", terminated_pid);",
+            "        if (WIFEXITED(status)) {",
+            "            printf(\"Child exited with status: %d\\n\", WEXITSTATUS(status));",
+            "        }",
+            "    }",
+            "    return 0;",
+            "}",
+            "```",
+            "### Expected Output:",
+            "```\nChild process (PID: 1234) running",
+            "Child terminating.",
+            "Parent: Child with PID 1234 terminated.",
+            "Child exited with status: 42\n```"
+        ],
+        "qText": "What does wait() return?"
+    },
+    {
+        "qId": "wqr020025",
+        "answers": [
+            "To modify a `fork()` program so that the parent waits for a child that sleeps for 2 seconds before terminating, we can use `sleep(2)` in the child process before calling `wait()` in the parent.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <unistd.h>",
+            "#include <sys/types.h>",
+            "#include <sys/wait.h>",
+            "",
+            "int main() {",
+            "    pid_t pid = fork();",
+            "",
+            "    if (pid < 0) {",
+            "        perror(\"Fork failed\");",
+            "        return 1;",
+            "    }",
+            "",
+            "    if (pid == 0) {",
+            "        printf(\"Child process sleeping for 2 seconds...\\n\");",
+            "        sleep(2);",
+            "        printf(\"Child process finished.\\n\");",
+            "    } else {",
+            "        wait(NULL);",
+            "        printf(\"Parent process: Child has finished.\\n\");",
+            "    }",
+            "    return 0;",
+            "}",
+            "```",
+            "### Expected Output:",
+            "```\nChild process sleeping for 2 seconds...",
+            "Child process finished.",
+            "Parent process: Child has finished.\n```",
+            "### Explanation:",
+            "- The child process sleeps for 2 seconds before finishing.",
+            "- The parent process calls `wait()`, pausing until the child terminates."
+        ],
+        "qText": "Modify a fork() program to make the parent wait for the child that sleeps for 2 seconds."
+    },
+    {
+        "qId": "wqr020026",
+        "answers": [
+            "The `wait()` and `waitpid()` system calls both allow a parent process to wait for a child process to terminate, but they behave differently.",
+            "### Key Differences:",
+            "- `wait()`: Waits for **any** child process to terminate and returns its PID.",
+            "- `waitpid(pid, &status, options)`: Waits for a **specific** child process (determined by `pid`).",
+            "- `waitpid()` can use options like `WNOHANG` for non-blocking behavior.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <stdlib.h>",
+            "#include <unistd.h>",
+            "#include <sys/types.h>",
+            "#include <sys/wait.h>",
+            "",
+            "int main() {",
+            "    pid_t pid1 = fork();",
+            "    if (pid1 == 0) { sleep(2); printf(\"Child 1 finished\\n\"); exit(0); }",
+            "",
+            "    pid_t pid2 = fork();",
+            "    if (pid2 == 0) { sleep(4); printf(\"Child 2 finished\\n\"); exit(0); }",
+            "",
+            "    printf(\"Parent waiting for Child 2 using waitpid()\\n\");",
+            "    waitpid(pid2, NULL, 0);",
+            "    printf(\"Child 2 reaped. Now waiting for Child 1.\\n\");",
+            "    waitpid(pid1, NULL, 0);",
+            "    printf(\"Child 1 reaped. Parent exiting.\\n\");",
+            "    return 0;",
+            "}",
+            "```"
+        ],
+        "qText": "What is the difference between wait() and waitpid()?"
+    },
+    {
+        "qId": "wqr020027",
+        "answers": [
+            "If a parent process does not call `wait()`, its terminated child processes become **zombie processes** until they are reaped by an ancestor or init.",
+            "### Consequences of Not Calling `wait()`:",
+            "- The child’s **exit status remains in the process table**, leading to resource wastage.",
+            "- If too many zombie processes accumulate, the system may **run out of process table entries**.",
+            "### Example Code Showing Zombie Creation:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <stdlib.h>",
+            "#include <unistd.h>",
+            "",
+            "int main() {",
+            "    pid_t pid = fork();",
+            "    if (pid == 0) {",
+            "        printf(\"Child process terminating.\\n\");",
+            "        exit(0);",
+            "    } else {",
+            "        printf(\"Parent running without waiting... Child becomes a zombie.\\n\");",
+            "        sleep(5);",
+            "    }",
+            "    return 0;",
+            "}",
+            "```",
+            "### Solution: Use `wait()` to prevent zombies."
+        ],
+        "qText": "What happens if a parent does not call wait() for a child process?"
+    },
+    {
+        "qId": "wqr020028",
+        "answers": [
+            "To ensure that the parent waits before printing its message, we use `wait()`, forcing the parent to pause until the child finishes.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <unistd.h>",
+            "#include <sys/wait.h>",
+            "",
+            "int main() {",
+            "    pid_t pid = fork();",
+            "    if (pid == 0) {",
+            "        printf(\"Child\\n\");",
+            "    } else {",
+            "        wait(NULL);",
+            "        printf(\"Parent\\n\");",
+            "    }",
+            "    return 0;",
+            "}",
+            "```",
+            "### Expected Output:",
+            "```\nChild",
+            "Parent\n```"
+        ],
+        "qText": "Write a program where the parent waits using wait() before printing a message."
+    },
+    {
+        "qId": "wqr020029",
+        "answers": [
+            "If a parent process has multiple children, `wait()` returns when **any** of them terminates. The return value is the PID of the terminated child.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <unistd.h>",
+            "#include <sys/wait.h>",
+            "",
+            "int main() {",
+            "    pid_t pid1 = fork();",
+            "    if (pid1 == 0) { sleep(2); exit(1); }",
+            "",
+            "    pid_t pid2 = fork();",
+            "    if (pid2 == 0) { sleep(4); exit(2); }",
+            "",
+            "    int status;",
+            "    pid_t terminated_pid = wait(&status);",
+            "    printf(\"Child with PID %d exited.\\n\", terminated_pid);",
+            "    terminated_pid = wait(&status);",
+            "    printf(\"Child with PID %d exited.\\n\", terminated_pid);",
+            "    return 0;",
+            "}",
+            "```"
+        ],
+        "qText": "How does wait() behave when a parent has multiple child processes?"
+    },
+    {
+        "qId": "exec001",
+        "answers": [
+            "The `exec()` system call replaces the current process image with a new program. It **does not create a new process** like `fork()`, but instead, it overwrites the existing process.",
+            "### Use Cases:",
+            "- Running a new program **within the same process**.",
+            "- Implementing shell commands or process execution in operating systems.",
+            "### Example Code:",
+            "```c",
+            "#include <unistd.h>",
+            "int main() {",
+            "    char *args[] = {\"ls\", \"-l\", NULL};",
+            "    execvp(args[0], args);",
+            "    return 0;",
+            "}",
+            "```"
+        ],
+        "qText": "What is the purpose of the exec() system call in UNIX?"
+    },
+    {
+        "qId": "exec002",
+        "answers": [
+            "`fork()` creates a new process, while `exec()` replaces the current process image with a new program.",
+            "### Key Differences:",
+            "- `fork()`: **Creates a new process (child)** with its own memory space.",
+            "- `exec()`: **Replaces the current process image**, keeping the same PID.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <unistd.h>",
+            "",
+            "int main() {",
+            "    if (fork() == 0) {",
+            "        char *args[] = {\"ls\", \"-l\", NULL};",
+            "        execvp(args[0], args);",
+            "    } else {",
+            "        wait(NULL);",
+            "    }",
+            "    return 0;",
+            "}",
+            "```"
+        ],
+        "qText": "How does exec() differ from fork()?"
+    },
+    {
+        "qId": "exec005",
+        "answers": [
+            "The child process will execute the `date` command using `execvp()`, while the parent waits.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <stdlib.h>",
+            "#include <unistd.h>",
+            "#include <sys/wait.h>",
+            "",
+            "int main() {",
+            "    if (fork() == 0) {",
+            "        char *args[] = {\"date\", NULL};",
+            "        execvp(args[0], args);",
+            "    } else {",
+            "        wait(NULL);",
+            "        printf(\"Parent finished\\n\");",
+            "    }",
+            "    return 0;",
+            "}",
+            "```",
+            "### Expected Output:",
+            "```\nSun Mar 24 12:34:56 UTC 2025",
+            "Parent finished\n```"
+        ],
+        "qText": "Write a program where the child executes the 'date' command using execvp(), while the parent waits."
+    },
+    {
+        "qId": "exec006",
+        "answers": [
+            "When `exec()` is called:",
+            "- The **PID remains the same**, as no new process is created.",
+            "- The entire **process memory (code, stack, heap, data)** is replaced.",
+            "- The **file descriptors remain unchanged** unless explicitly modified.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <unistd.h>",
+            "",
+            "int main() {",
+            "    printf(\"Before exec()\\n\");",
+            "    char *args[] = {\"ls\", NULL};",
+            "    execvp(args[0], args);",
+            "    return 0;",
+            "}",
+            "```"
+        ],
+        "qText": "What happens to a process's PID and memory when exec() is executed?"
+    },
+    {
+        "qId": "exec007",
+        "answers": [
+            "Using `exec()` inside `fork()` allows the child process to execute a different program while the parent retains control over execution.",
+            "### Why Use `exec()` in `fork()`?",
+            "- The `fork()` system call creates a new child process.",
+            "- The child process can then use `exec()` to load and execute a different program.",
+            "- The parent process can continue managing execution, waiting for the child, or performing other tasks.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <unistd.h>",
+            "#include <sys/wait.h>",
+            "",
+            "int main() {",
+            "    pid_t pid = fork();",
+            "    if (pid == 0) {",
+            "        printf(\"Child executing ls -l\\n\");",
+            "        execlp(\"ls\", \"ls\", \"-l\", NULL);",
+            "    } else {",
+            "        wait(NULL);",
+            "        printf(\"Parent finished\\n\");",
+            "    }",
+            "    return 0;",
+            "}",
+            "```"
+        ],
+        "qText": "Why is exec() often used inside a fork()?"
+    },
+    {
+        "qId": "exec008",
+        "answers": [
+            "The following C program executes the `gcc --version` command using `execvp()`.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <stdlib.h>",
+            "#include <unistd.h>",
+            "",
+            "int main() {",
+            "    char *args[] = {\"gcc\", \"--version\", NULL};",
+            "    execvp(args[0], args);",
+            "    perror(\"exec failed\");",
+            "    return 1;",
+            "}",
+            "```",
+            "### Expected Output:",
+            "```\ngcc (GCC) 10.2.1 20210130\n... (additional version details)\n```"
+        ],
+        "qText": "Write a C program that executes 'gcc --version' using execvp()."
+    },
+    {
+        "qId": "exec009",
+        "answers": [
+            "### Difference Between `execlp()` and `execvp()`:",
+            "- `execlp()`: Takes arguments as **separate parameters**.",
+            "- `execvp()`: Takes arguments as a **NULL-terminated array**.",
+            "### Example Code Comparison:",
+            "Using `execlp()`:",
+            "```c",
+            "execlp(\"ls\", \"ls\", \"-l\", NULL);",
+            "```",
+            "Using `execvp()`:",
+            "```c",
+            "char *args[] = {\"ls\", \"-l\", NULL};",
+            "execvp(args[0], args);",
+            "```"
+        ],
+        "qText": "What is the difference between execlp() and execvp()?"
+    },
+    {
+        "qId": "exec010",
+        "answers": [
+            "If `exec()` fails, the original process **continues executing**, as `exec()` only replaces the process on success.",
+            "### Handling Failure:",
+            "- The return value of `exec()` is only set if an error occurs.",
+            "- `perror()` can be used to print the error message.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <unistd.h>",
+            "",
+            "int main() {",
+            "    char *args[] = {\"nonexistent_program\", NULL};",
+            "    execvp(args[0], args);",
+            "    perror(\"exec failed\");",
+            "    return 1;",
+            "}",
+            "```",
+            "### Expected Output (if the program does not exist):",
+            "```\nexec failed: No such file or directory\n```"
+        ],
+        "qText": "What happens if exec() fails, and how can you handle the failure?"
+    },
+    {
+        "qId": "shell001",
+        "answers": [
+            "The separation of `fork()` and `exec()` in UNIX shells is crucial because it allows the shell to modify the child process before executing a new program.",
+            "### Benefits of Separation:",
+            "- Allows **I/O redirection** (e.g., using `dup2()` before `exec()`)",
+            "- Enables **background execution** (`&` operator in shells)",
+            "- Supports **signal handling and process management**",
+            "### Example: Running a Command with Output Redirection",
+            "```c",
+            "#include <stdio.h>",
+            "#include <unistd.h>",
+            "#include <fcntl.h>",
+            "",
+            "int main() {",
+            "    int pid = fork();",
+            "    if (pid == 0) {",
+            "        int fd = open(\"output.txt\", O_WRONLY | O_CREAT | O_TRUNC, 0644);",
+            "        dup2(fd, STDOUT_FILENO);",
+            "        close(fd);",
+            "        execlp(\"ls\", \"ls\", \"-l\", NULL);",
+            "    } else {",
+            "        wait(NULL);",
+            "    }",
+            "    return 0;",
+            "}",
+            "```"
+        ],
+        "qText": "Why is the separation of fork() and exec() important in UNIX shells?"
+    },
+    {
+        "qId": "shell002",
+        "answers": [
+            "The `>` operator in a shell command redirects **standard output** to a file instead of displaying it on the screen.",
+            "### Example:",
+            "```\nwps p4.c > output.txt\n```",
+            "- This writes the output of `wps p4.c` into `output.txt` instead of the terminal.",
+            "- If the file already exists, it is **overwritten**."
+        ],
+        "qText": "What does the '>' operator do in a shell command like 'wc p4.c > output.txt'?"
+    },
+    {
+        "qId": "shell003",
+        "answers": [
+            "The following C code redirects standard output (`STDOUT_FILENO`) to a file named `output.txt` using `dup2()`.",
+            "### Example Code:",
+            "```c",
+            "#include <fcntl.h>",
+            "#include <unistd.h>",
+            "",
+            "int main() {",
+            "    int fd = open(\"output.txt\", O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);",
+            "    dup2(fd, STDOUT_FILENO);",
+            "    close(fd);",
+            "    printf(\"This will be written to output.txt\\n\");",
+            "    return 0;",
+            "}",
+            "```",
+            "### Expected Behavior:",
+            "- The message **won't appear on the screen**, but will be written to `output.txt`."
+        ],
+        "qText": "Write C code to redirect standard output to a file named 'output.txt'."
+    },
+    {
+        "qId": "shell004",
+        "answers": [
+            "The `pipe()` system call in UNIX creates a **unidirectional data channel** for **Inter-Process Communication (IPC)**.",
+            "### How It Works:",
+            "- A **pipe** consists of two ends: **read-end and write-end**.",
+            "- Data written to the write-end can be read from the read-end.",
+            "### Example Code:",
+            "```c",
+            "#include <stdio.h>",
+            "#include <unistd.h>",
+            "",
+            "int main() {",
+            "    int fd[2];",
+            "    pipe(fd);",
+            "    if (fork() == 0) {",
+            "        close(fd[0]);",
+            "        write(fd[1], \"Hello from child\", 15);",
+            "        close(fd[1]);",
+            "    } else {",
+            "        char buffer[20];",
+            "        close(fd[1]);",
+            "        read(fd[0], buffer, sizeof(buffer));",
+            "        printf(\"Parent received: %s\\n\", buffer);",
+            "        close(fd[0]);",
+            "    }",
+            "    return 0;",
+            "}",
+            "```",
+            "### Expected Output:",
+            "```\nParent received: Hello from child\n```"
+        ],
+        "qText": "What does the pipe() system call do in UNIX?"
+    },
+    {
+        "qId": "shell005",
+        "answers": [
+            "This C program demonstrates how to redirect the output of the 'ls -l' command to a file named 'output.txt'.",
+            "The open() function is used to create or open 'output.txt' with write permissions. The file descriptor is then duplicated to STDOUT_FILENO using dup2(), ensuring that any output from the 'ls -l' command is written to the file instead of the terminal.",
+            "Finally, execlp() replaces the current process with 'ls -l', inheriting the redirected output.",
+            "```c\n#include <unistd.h>\n#include <fcntl.h>\n#include <stdio.h>\n#include <stdlib.h>\n\nint main() {\n    int fd = open(\"output.txt\", O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);\n    if (fd < 0) {\n        perror(\"open\");\n        exit(1);\n    }\n    dup2(fd, STDOUT_FILENO);\n    close(fd);\n    execlp(\"ls\", \"ls\", \"-l\", NULL);\n    perror(\"execlp\");\n    return 1;\n}\n```"
+        ],
+        "qText": "Write a C program that redirects output of 'ls -l' to a file named 'output.txt' using execlp()."
+    },
+    {
+        "qId": "shell006",
+        "answers": [
+            "A pipe in UNIX is a mechanism that allows interprocess communication by connecting the output of one process to the input of another.",
+            "The pipe() system call creates a unidirectional communication channel consisting of a read-end and a write-end. The writing process sends data into the pipe, while the reading process retrieves it.",
+            "Pipes are commonly used with fork(), where the parent and child process communicate through the pipe.",
+            "```c\n#include <stdio.h>\n#include <unistd.h>\n#include <stdlib.h>\n#include <string.h>\n\nint main() {\n    int fd[2];\n    if (pipe(fd) == -1) {\n        perror(\"pipe\");\n        exit(1);\n    }\n\n    pid_t pid = fork();\n    if (pid == -1) {\n        perror(\"fork\");\n        exit(1);\n    }\n\n    if (pid == 0) { // Child process\n        close(fd[0]); // Close unused read end\n        char message[] = \"Hello from child!\";\n        write(fd[1], message, strlen(message) + 1);\n        close(fd[1]);\n    } else { // Parent process\n        close(fd[1]); // Close unused write end\n        char buffer[100];\n        read(fd[0], buffer, sizeof(buffer));\n        printf(\"Parent received: %s\\n\", buffer);\n        close(fd[0]);\n    }\n\n    return 0;\n}\n```"
+        ],
+        "qText": "How do UNIX pipes work conceptually?"
+    },
+    {
+        "qId": "shell007",
+        "answers": [
+            "The fork() system call creates a new process by duplicating the calling process. The child process receives a unique process ID (PID) and a copy of the parent’s memory space, but both processes execute independently.",
+            "The exec() system call replaces the process image with a new program. Unlike fork(), it does not create a new process but instead replaces the current process with the specified executable.",
+            "A common use case is for a parent to call fork() to create a child process, and the child then uses exec() to execute a different program.",
+            "```c\n#include <stdio.h>\n#include <unistd.h>\n#include <stdlib.h>\n\nint main() {\n    pid_t pid = fork();\n    if (pid == -1) {\n        perror(\"fork\");\n        exit(1);\n    }\n\n    if (pid == 0) { // Child process\n        printf(\"Child process executing 'ls' command...\\n\");\n        execlp(\"ls\", \"ls\", NULL);\n        perror(\"execlp\"); // Only executes if exec fails\n        exit(1);\n    } else { // Parent process\n        wait(NULL);\n        printf(\"Parent process finished.\\n\");\n    }\n    return 0;\n}\n```"
+        ],
+        "qText": "What is the difference between fork() and exec()?"
+    },
+    {
+        "qId": "shell008",
+        "answers": [
+            "No, exec() does not return if it executes successfully. This is because exec() replaces the entire process image with the new program, meaning the calling function is never returned to.",
+            "However, if exec() fails (e.g., the executable does not exist or there are permission issues), it returns -1 and sets errno.",
+            "A proper implementation checks for exec() failure and handles it appropriately.",
+            "```c\n#include <stdio.h>\n#include <unistd.h>\n#include <stdlib.h>\n\nint main() {\n    printf(\"Before exec\\n\");\n    execlp(\"ls\", \"ls\", \"-l\", NULL);\n    perror(\"execlp\"); // This runs only if exec fails\n    return 1;\n}\n```"
+        ],
+        "qText": "Does exec() return if successful? Why or why not?"
+    },
+    {
+        "qId": "shell009",
+        "answers": [
+            "The wait() system call is used by a parent process to pause execution until one of its child processes terminates.",
+            "This prevents the parent from creating zombie processes (terminated processes that still consume resources).",
+            "Once the child exits, wait() returns the child's PID, and the parent can retrieve the child's exit status.",
+            "```c\n#include <stdio.h>\n#include <unistd.h>\n#include <sys/wait.h>\n#include <stdlib.h>\n\nint main() {\n    pid_t pid = fork();\n    if (pid == -1) {\n        perror(\"fork\");\n        exit(1);\n    }\n    \n    if (pid == 0) { // Child process\n        printf(\"Child executing\\n\");\n        sleep(2);\n        printf(\"Child exiting\\n\");\n        exit(0);\n    } else { // Parent process\n        printf(\"Parent waiting for child\\n\");\n        wait(NULL);\n        printf(\"Child process finished, parent resumes\\n\");\n    }\n    return 0;\n}\n```"
+        ],
+        "qText": "What is the purpose of the wait() system call?"
+    },
+    {
+        "qId": "shell010",
+        "answers": [
+            "A child process can redirect its output to a file before executing another program using file descriptors.",
+            "This is typically done using the open() function to obtain a file descriptor, then using dup2() to replace the standard output descriptor with the file descriptor.",
+            "This ensures that any output generated by the exec() call goes into the specified file instead of the terminal.",
+            "```c\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n#include <fcntl.h>\n\nint main() {\n    int fd = open(\"output.txt\", O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);\n    if (fd < 0) {\n        perror(\"open\");\n        exit(1);\n    }\n\n    pid_t pid = fork();\n    if (pid == 0) { // Child process\n        dup2(fd, STDOUT_FILENO);\n        close(fd);\n        execlp(\"echo\", \"echo\", \"Hello, this is redirected output!\", NULL);\n        perror(\"execlp\");\n        exit(1);\n    } else { // Parent process\n        close(fd);\n        wait(NULL);\n        printf(\"Child process completed, output redirected.\\n\");\n    }\n    return 0;\n}\n```"
+        ],
+        "qText": "How can a child process redirect its output to a file before executing another program?"
+    },
+    {
+        "qId": "shell011",
+        "answers": [
+            "The execv() and execvp() functions are part of the exec family of system calls, used to replace the current process with a new executable.",
+            "The difference lies in how the executable file is specified:",
+            "- execv() requires the full path to the executable file.",
+            "- execvp() searches for the executable in the directories specified in the PATH environment variable, making it more convenient for running standard system commands.",
+            "Example of using execv():",
+            "```c\n#include <stdio.h>\n#include <unistd.h>\n#include <stdlib.h>\n\nint main() {\n    char *args[] = {\"/bin/ls\", \"-l\", NULL};\n    execv(args[0], args);\n    perror(\"execv\"); // Only runs if exec fails\n    return 1;\n}\n```",
+            "Example of using execvp():",
+            "```c\n#include <stdio.h>\n#include <unistd.h>\n#include <stdlib.h>\n\nint main() {\n    char *args[] = {\"ls\", \"-l\", NULL};\n    execvp(args[0], args);\n    perror(\"execvp\"); // Only runs if exec fails\n    return 1;\n}\n```"
+        ],
+        "qText": "What is the difference between execv() and execvp()?"
+    },
+    {
+        "qId": "shell012",
+        "answers": [
+            "Appending '&' at the end of a shell command runs the command in the background.",
+            "This allows the shell to continue accepting new commands without waiting for the previous command to finish executing.",
+            "Example:",
+            "```sh\n$ sleep 10 &\n[1] 12345\n```",
+            "Here, `sleep 10` runs in the background, and the shell immediately returns control to the user while process 12345 executes independently."
+        ],
+        "qText": "What does appending '&' at the end of a shell command do?"
+    },
+    {
+        "qId": "shell013",
+        "answers": [
+            "When execvp() is called, it replaces the current process image with the new executable.",
+            "Since the process itself is replaced, any code after execvp() will never be executed unless execvp() fails.",
+            "Example demonstrating why a printf() after execvp() does not execute:",
+            "```c\n#include <stdio.h>\n#include <unistd.h>\n#include <stdlib.h>\n\nint main() {\n    printf(\"Before execvp\\n\");\n    char *args[] = {\"ls\", \"-l\", NULL};\n    execvp(args[0], args);\n    printf(\"This will not print if execvp is successful!\\n\");\n    return 1;\n}\n```",
+            "Here, if execvp() succeeds, the process is replaced, and 'This will not print...' never executes."
+        ],
+        "qText": "Why does the printf() after execvp() in p3.c never execute?"
+    },
+    {
+        "qId": "shell014",
+        "answers": [
+            "The dup2() system call is used to duplicate file descriptors, commonly for input/output redirection.",
+            "It allows a process to redirect standard input or output to a file before executing a new program.",
+            "Example usage:",
+            "```c\n#include <stdio.h>\n#include <fcntl.h>\n#include <unistd.h>\n\nint main() {\n    int fd = open(\"output.txt\", O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);\n    if (fd < 0) {\n        perror(\"open\");\n        return 1;\n    }\n    dup2(fd, STDOUT_FILENO);\n    close(fd);\n    execlp(\"ls\", \"ls\", \"-l\", NULL);\n    perror(\"execlp\");\n    return 1;\n}\n```",
+            "This redirects standard output to 'output.txt' before executing 'ls -l'."
+        ],
+        "qText": "What system call is used to duplicate file descriptors and is useful for input/output redirection?"
+    },
+    {
+        "qId": "shell015",
+        "answers": [
+            "If a parent process does not call wait() on its child processes, the child processes become zombie processes.",
+            "A zombie process is one that has completed execution but still has an entry in the process table because the parent has not retrieved its exit status.",
+            "To prevent zombies, the parent should call wait() or handle SIGCHLD asynchronously.",
+            "Example of handling wait():",
+            "```c\n#include <stdio.h>\n#include <unistd.h>\n#include <sys/wait.h>\n\nint main() {\n    pid_t pid = fork();\n    if (pid == 0) {\n        printf(\"Child process running...\\n\");\n        sleep(2);\n        printf(\"Child exiting\\n\");\n        return 0;\n    } else {\n        wait(NULL);\n        printf(\"Parent reaped child process.\\n\");\n    }\n    return 0;\n}\n```"
+        ],
+        "qText": "What happens if a parent process does not call wait() on its child processes?"
+    },
+    {
+        "qId": "shell016",
+        "answers": [
+            "Yes, exec() retains file descriptor changes made before execution.",
+            "Since file descriptors are inherited across exec(), any modifications (such as redirection) persist in the new process.",
+            "Example:",
+            "```c\n#include <stdio.h>\n#include <fcntl.h>\n#include <unistd.h>\n\nint main() {\n    int fd = open(\"output.txt\", O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);\n    dup2(fd, STDOUT_FILENO);\n    close(fd);\n    execlp(\"echo\", \"echo\", \"This output is redirected.\", NULL);\n    perror(\"execlp\");\n    return 1;\n}\n```"
+        ],
+        "qText": "Does exec() retain file descriptor changes made before execution?"
+    },
+    {
+        "qId": "shell017",
+        "answers": [
+            "A shell executes a command entered by the user by following these steps:",
+            "1. It reads the user input.",
+            "2. It creates a new process using fork().",
+            "3. The child process executes the command using exec().",
+            "4. The parent process waits for the child to complete if needed.",
+            "Example shell-like execution:",
+            "```c\n#include <stdio.h>\n#include <unistd.h>\n#include <stdlib.h>\n\nint main() {\n    char *args[] = {\"ls\", \"-l\", NULL};\n    pid_t pid = fork();\n    if (pid == 0) {\n        execvp(args[0], args);\n        perror(\"execvp\");\n        exit(1);\n    } else {\n        wait(NULL);\n        printf(\"Command executed.\\n\");\n    }\n    return 0;\n}\n```"
+        ],
+        "qText": "How does a shell execute a command entered by a user?"
+    },
+    {
+        "qId": "shell018",
+        "answers": [
+            "The SIGCHLD signal is sent to the parent process when a child process terminates.",
+            "This allows the parent to handle cleanup and prevent zombie processes.",
+            "Example of handling SIGCHLD:",
+            "```c\n#include <signal.h>\n#include <sys/wait.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n\nvoid sigchld_handler(int signum) {\n    wait(NULL);\n    printf(\"Child process terminated.\\n\");\n}\n\nint main() {\n    signal(SIGCHLD, sigchld_handler);\n    if (fork() == 0) {\n        sleep(2);\n        exit(0);\n    }\n    sleep(5);\n    return 0;\n}\n```"
+        ],
+        "qText": "What signal is sent to the parent process when a child process terminates?"
+    },
+    {
+        "qId": "shell019",
+        "answers": [
+            "If a parent process exits before its child, the child process becomes an orphan.",
+            "In UNIX-based systems, orphaned processes are adopted by the init process (PID 1), which ensures that they can still execute and eventually terminate properly.",
+            "Example:",
+            "```c\n#include <stdio.h>\n#include <stdlib.h>\n#include <unistd.h>\n\nint main() {\n    pid_t pid = fork();\n    if (pid == 0) {\n        sleep(5);\n        printf(\"Child process (PID: %d), my parent is now: %d\\n\", getpid(), getppid());\n    } else {\n        printf(\"Parent process exiting.\\n\");\n        exit(0);\n    }\n    return 0;\n}\n```",
+            "Here, the child process sleeps while the parent exits. When it wakes up, it finds that its parent is now `init`."
+        ],
+        "qText": "What happens if a parent process exits before its child?"
+    },
+    {
+        "qId": "sched001",
+        "answers": [
+            "Scheduling policies in an operating system determine how CPU time is allocated among processes.",
+            "The main goals of scheduling policies include:",
+            "- Maximizing CPU utilization",
+            "- Providing fairness among processes",
+            "- Reducing response time for interactive processes",
+            "- Ensuring deadlines are met for real-time tasks",
+            "Common scheduling policies:",
+            "- **First-Come, First-Served (FCFS)**: Processes execute in order of arrival.",
+            "- **Round Robin (RR)**: Each process gets a fixed time slice before moving to the next.",
+            "- **Shortest Job Next (SJN)**: The process with the shortest execution time runs first."
+        ],
+        "qText": "What is the purpose of scheduling policies in an operating system?"
+    },
+    {
+        "qId": "sched002",
+        "answers": [
+            "Early scheduling policies were influenced by operations management and manufacturing techniques.",
+            "Concepts from job scheduling in factories, such as batch processing and priority queues, were adapted to operating systems.",
+            "For example:",
+            "- **First-Come, First-Served (FCFS)** is similar to an assembly line where tasks are handled in order.",
+            "- **Priority Scheduling** was inspired by priority-based task management in logistics and inventory control.",
+            "- **Round Robin (RR)** is similar to time-sharing systems used in managing employee shifts."
+        ],
+        "qText": "What field influenced the development of early computer scheduling policies?"
+    },
+    {
+        "qId": "sched003",
+        "answers": [
+            "Workload assumptions simplify scheduling decisions by predicting job behavior.",
+            "These assumptions allow scheduling algorithms to be designed based on expected job execution patterns.",
+            "Common assumptions include:",
+            "- **Equal runtime for all jobs**: Used in early batch systems.",
+            "- **Simultaneous job arrivals**: Helps in modeling scheduling fairness.",
+            "- **Independent jobs (no dependencies)**: Simplifies execution order.",
+            "However, real-world workloads are unpredictable, so modern schedulers use dynamic adjustments based on observed behavior."
+        ],
+        "qText": "What is the purpose of workload assumptions in scheduling?"
+    },
+    {
+        "qId": "sched004",
+        "answers": [
+            "Turnaround time is a key performance metric in scheduling that measures how long a process takes from arrival to completion.",
+            "It is defined as:",
+            "```plaintext\nTurnaround Time = Completion Time - Arrival Time\n```",
+            "Example calculation:",
+            "If a process arrives at time 2 and completes at time 10, its turnaround time is:",
+            "```plaintext\n10 - 2 = 8 units of time\n```",
+            "Lower turnaround time improves system efficiency and user experience, especially in interactive environments."
+        ],
+        "qText": "How is turnaround time defined in scheduling?"
+    },
+    {
+        "qId": "sched005",
+        "answers": [
+            "Turnaround time is calculated using the formula:",
+            "```plaintext\nTurnaround Time = Completion Time - Arrival Time\n```",
+            "This metric represents the total time taken from when a process arrives in the system to when it completes execution."
+        ],
+        "qText": "What is the formula for turnaround time?"
+    },
+    {
+        "qId": "sched006",
+        "answers": [
+            "A scheduling metric is a quantitative measure used to evaluate the efficiency and fairness of a scheduling algorithm.",
+            "Common scheduling metrics include:",
+            "- **Turnaround Time**: Measures the total time taken for a job to complete.",
+            "- **Waiting Time**: The amount of time a process spends in the ready queue before execution.",
+            "- **Response Time**: The time taken from submission to the first execution.",
+            "- **Throughput**: The number of processes completed per unit time.",
+            "Different metrics help optimize different scheduling goals, such as minimizing delays or maximizing CPU utilization."
+        ],
+        "qText": "What is a scheduling metric?"
+    },
+    {
+        "qId": "sched007",
+        "answers": [
+            "Fairness in CPU scheduling ensures that all processes receive a reasonable share of CPU time and are not starved.",
+            "A fair scheduling algorithm aims to:",
+            "- Prevent starvation by ensuring lower-priority tasks eventually execute.",
+            "- Distribute CPU time equitably among competing processes.",
+            "- Balance the needs of short and long processes.",
+            "Example: **Round Robin (RR)** is a fair scheduling algorithm as it gives each process a fixed time slice before moving to the next."
+        ],
+        "qText": "What does fairness mean in CPU scheduling?"
+    },
+    {
+        "qId": "sched008",
+        "answers": [
+            "Jain's Fairness Index is commonly used to measure fairness in scheduling.",
+            "It is calculated using the formula:",
+            "```plaintext\nJ = (∑xi)^2 / (n * ∑xi^2)\n```",
+            "where `xi` represents the resource allocation for each process, and `n` is the number of processes.",
+            "A fairness index value close to 1 indicates equal distribution, while a lower value suggests imbalance."
+        ],
+        "qText": "What metric is used to measure fairness in scheduling?"
+    },
+    {
+        "qId": "sched009",
+        "answers": [
+            "The assumption that job runtimes are known in advance is the most unrealistic.",
+            "Reasons why this assumption fails:",
+            "- The OS cannot predict execution time accurately since job complexity varies.",
+            "- Jobs may have dynamic behaviors, such as I/O operations or unpredictable loops.",
+            "- Real-world applications often depend on user input or external events, making runtime estimation impossible.",
+            "Instead of assuming runtime, modern schedulers use dynamic time-sharing and priority adjustments."
+        ],
+        "qText": "Which workload assumption is the most unrealistic, and why?"
+    },
+    {
+        "qId": "sched010",
+        "answers": [
+            "There is often a trade-off between performance and fairness in scheduling due to competing goals.",
+            "For example:",
+            "- **Performance-focused scheduling** (e.g., Shortest Job Next) prioritizes efficiency but can lead to starvation of long-running jobs.",
+            "- **Fair scheduling** (e.g., Round Robin) ensures all jobs get CPU time but may reduce overall efficiency due to frequent context switches.",
+            "Schedulers aim to balance these factors by using priority aging, dynamic time slices, or hybrid approaches."
+        ],
+        "qText": "Why is there a trade-off between performance and fairness in scheduling?"
+    },
+    {
+        "qId": "sched011",
+        "answers": [
+            "Early CPU scheduling disciplines assumed that jobs were entirely CPU-bound and did not require I/O operations.",
+            "This led to simplistic batch-processing algorithms where jobs executed sequentially with minimal preemption.",
+            "However, in reality:",
+            "- Many jobs perform frequent I/O operations, requiring CPU scheduling to account for blocking periods.",
+            "- Modern OS schedulers consider both CPU- and I/O-bound jobs to improve system responsiveness and efficiency."
+        ],
+        "qText": "What was an early assumption about job execution in CPU scheduling?"
+    },
+    {
+        "qId": "sched012",
+        "answers": [
+            "A scheduling discipline is a set of rules that define how processes are scheduled for execution on a CPU.",
+            "It determines the order of execution, priority handling, and time allocation for processes.",
+            "Examples of scheduling disciplines include:",
+            "- **First-Come, First-Served (FCFS)**: Jobs execute in order of arrival.",
+            "- **Shortest Job Next (SJN)**: The job with the shortest execution time is scheduled first.",
+            "- **Round Robin (RR)**: Each process gets a fixed time slice before switching to the next.",
+            "- **Priority Scheduling**: Processes are scheduled based on priority levels.",
+            "Different disciplines are suited for different workloads, balancing fairness, efficiency, and responsiveness."
+        ],
+        "qText": "What is a scheduling discipline?"
+    },
+    {
+        "qId": "sched013",
+        "answers": [
+            "A fully-operational scheduling discipline is a scheduling policy that accounts for realistic workloads, system constraints, and efficiency goals.",
+            "It should handle:",
+            "- **Preemption**: Allowing higher-priority jobs to interrupt lower-priority ones.",
+            "- **Fairness**: Ensuring all jobs receive reasonable CPU time.",
+            "- **Response Time**: Optimizing user experience by minimizing delays.",
+            "- **Scalability**: Working efficiently under high loads.",
+            "Example: **Multi-level Feedback Queue (MLFQ)** dynamically adjusts job priorities based on their behavior, making it a fully-operational discipline."
+        ],
+        "qText": "What is a fully-operational scheduling discipline?"
+    },
+    {
+        "qId": "sched014",
+        "answers": [
+            "Context switching allows the CPU to switch between multiple processes by saving and restoring execution states.",
+            "It involves:",
+            "1. **Saving the current process state** (registers, program counter, stack, etc.).",
+            "2. **Loading the next process state** to resume execution.",
+            "This mechanism is essential for multitasking, allowing multiple processes to share CPU time efficiently.",
+            "Example implementation of a basic context switch in C using `setjmp` and `longjmp`:",
+            "```c\n#include <stdio.h>\n#include <setjmp.h>\n\njmp_buf buf;\n\nvoid secondTask() {\n    printf(\"Switching to second task!\\n\");\n    longjmp(buf, 1);\n}\n\nint main() {\n    if (setjmp(buf) == 0) {\n        printf(\"Starting first task...\\n\");\n        secondTask();\n    } else {\n        printf(\"Back to first task after context switch!\\n\");\n    }\n    return 0;\n}\n```",
+            "Efficient context switching is crucial for reducing overhead and improving system performance."
+        ],
+        "qText": "What is the role of context switching in scheduling?"
+    },
+    {
+        "qId": "sched015",
+        "answers": [
+            "The simplest scheduling policy is **First-Come, First-Served (FCFS)**.",
+            "Characteristics of FCFS:",
+            "- Jobs execute in the order they arrive, like a queue.",
+            "- No preemption—once a process starts, it runs until completion.",
+            "- Simple to implement but can cause **convoy effect**, where short jobs wait for long ones to finish.",
+            "Example FCFS scheduling implementation in C:",
+            "```c\n#include <stdio.h>\n\nvoid fcfs(int processes[], int n) {\n    int waitTime = 0, totalWait = 0;\n    for (int i = 0; i < n; i++) {\n        printf(\"Process %d waiting time: %d\\n\", processes[i], waitTime);\n        totalWait += waitTime;\n        waitTime += processes[i];\n    }\n    printf(\"Average Waiting Time: %.2f\\n\", (float)totalWait / n);\n}\n\nint main() {\n    int processes[] = {5, 2, 8, 3};\n    int n = sizeof(processes) / sizeof(processes[0]);\n    fcfs(processes, n);\n    return 0;\n}\n```",
+            "FCFS is simple but inefficient for varied workloads."
+        ],
+        "qText": "What is the simplest scheduling policy?"
+    },
+    {
+        "qId": "sched016",
+        "answers": [
+            "Two primary goals of scheduling policies are:",
+            "1. **Efficiency (Performance)**: Maximizing CPU utilization and throughput.",
+            "2. **Fairness**: Ensuring all processes receive a fair share of CPU time.",
+            "A scheduler must strike a balance between these goals.",
+            "- **Performance-focused schedulers** (e.g., Shortest Job Next) prioritize fast execution but risk starvation of long-running tasks.",
+            "- **Fair schedulers** (e.g., Round Robin) ensure all tasks run but introduce context-switching overhead."
+        ],
+        "qText": "What are two primary goals of scheduling policies?"
+    },
+    {
+        "qId": "sched017",
+        "answers": [
+            "Assuming all jobs arrive at the same time simplifies scheduling because:",
+            "- The scheduler can make optimal decisions without considering new arrivals.",
+            "- Job ordering can be predetermined, reducing computational overhead.",
+            "- Policies like **Shortest Job Next (SJN)** and **FCFS** become easier to implement.",
+            "However, real-world workloads involve continuous job arrivals, requiring dynamic scheduling."
+        ],
+        "qText": "How does assuming all jobs arrive at the same time simplify scheduling?"
+    },
+    {
+        "qId": "sched018",
+        "answers": [
+            "A **workload** in CPU scheduling refers to the set of processes that need CPU time and their associated characteristics (e.g., burst time, priority).",
+            "Workload factors include:",
+            "- **CPU-bound vs. I/O-bound processes**",
+            "- **Arrival patterns (batch vs. continuous)**",
+            "- **Process priorities and deadlines**",
+            "Schedulers optimize resource allocation based on workload characteristics."
+        ],
+        "qText": "What is a workload in CPU scheduling?"
+    },
+    {
+        "qId": "sched019",
+        "answers": [
+            "Knowing a job’s runtime in advance is unrealistic because:",
+            "- The OS cannot predict how long a process will take to execute.",
+            "- Processes may include user input, I/O operations, or unpredictable loops.",
+            "- Programs may have conditional logic affecting execution time.",
+            "Instead of relying on exact runtimes, schedulers use **adaptive algorithms** like Multi-Level Feedback Queue (MLFQ) to adjust process priorities dynamically."
+        ],
+        "qText": "Why is knowing a job’s runtime in advance an unrealistic assumption?"
+    },
+    {
+        "qId": "sched020",
+        "answers": [
+            "CPU scheduling relates to assembly lines in manufacturing because both optimize the order of execution to improve efficiency.",
+            "- **Assembly Lines**: Arrange tasks sequentially to maximize output and minimize idle time.",
+            "- **CPU Scheduling**: Orders process execution to minimize waiting time and increase throughput.",
+            "Example: Just like an assembly line reduces bottlenecks, **Round Robin (RR) scheduling** ensures fair CPU time distribution, preventing one task from monopolizing resources."
+        ],
+        "qText": "How does scheduling relate to assembly lines in manufacturing?"
+    },
+    {
+        "qId": "sched021",
+        "answers": [
+            "**First In, First Out (FIFO) Scheduling**:",
+            "- Jobs are executed in the order they arrive, similar to a queue.",
+            "- **Non-preemptive**: Once a job starts, it runs until completion.",
+            "- **Fair** but **inefficient for long jobs**.",
+            "Example FIFO scheduling in C:",
+            "```c\n#include <stdio.h>\n\nvoid fifo(int processes[], int n) {\n    int waitTime = 0, totalWait = 0;\n    for (int i = 0; i < n; i++) {\n        printf(\"Process %d waiting time: %d\\n\", i + 1, waitTime);\n        totalWait += waitTime;\n        waitTime += processes[i];\n    }\n    printf(\"Average Waiting Time: %.2f\\n\", (float)totalWait / n);\n}\n\nint main() {\n    int processes[] = {5, 2, 8, 3};\n    int n = sizeof(processes) / sizeof(processes[0]);\n    fifo(processes, n);\n    return 0;\n}\n```"
+        ],
+        "qText": "What is FIFO scheduling?"
+    },
+    {
+        "qId": "sched022",
+        "answers": [
+            "**Advantages of FIFO Scheduling:**",
+            "- **Simple Implementation**: FIFO is easy to implement using a queue.",
+            "- **Fair Execution Order**: Ensures that jobs are executed in the order they arrive.",
+            "- **No Starvation**: Every job eventually gets CPU time.",
+            "Example: FIFO is useful in **batch processing** where execution order matters more than responsiveness."
+        ],
+        "qText": "What is one advantage of FIFO scheduling?"
+    },
+    {
+        "qId": "sched023",
+        "answers": [
+            "Average turnaround time in FIFO is calculated as:",
+            "Turnaround Time = Completion Time - Arrival Time",
+            "Example Calculation:",
+            "Jobs: **J1(10s), J2(10s), J3(10s)** (arriving at time 0)",
+            "- **J1 completes at 10s**",
+            "- **J2 completes at 20s**",
+            "- **J3 completes at 30s**",
+            "Average Turnaround Time = (10 + 20 + 30) / 3 = **20 seconds**"
+        ],
+        "qText": "How is the average turnaround time calculated in FIFO scheduling?"
+    },
+    {
+        "qId": "sched024",
+        "answers": [
+            "**FIFO performs poorly when long jobs block shorter jobs.**",
+            "This increases the **average turnaround time** and leads to inefficiency.",
+            "Example of poor FIFO performance:",
+            "- **J1 (100s), J2 (10s), J3 (10s)** (arriving at the same time)",
+            "- J1 executes first, delaying J2 and J3.",
+            "- J2 and J3 wait **100s** before starting.",
+            "This causes a **high average waiting time**, making FIFO inefficient."
+        ],
+        "qText": "When does FIFO scheduling perform poorly?"
+    },
+    {
+        "qId": "sched025",
+        "answers": [
+            "**The Convoy Effect** occurs in FIFO when a long job delays all shorter jobs, leading to inefficiency.",
+            "- **Cause**: Short jobs are stuck waiting for a long job to finish.",
+            "- **Effect**: Increases average turnaround time and CPU idleness.",
+            "Example:",
+            "```c\nJobs: [J1(100s), J2(10s), J3(10s)]\nExecution Order: J1 → J2 → J3\n```\nJ2 and J3 suffer long waiting times."
+        ],
+        "qText": "What is the convoy effect in scheduling?"
+    },
+    {
+        "qId": "sched026",
+        "answers": [
+            "**FIFO is inefficient when a long job executes before shorter jobs.**",
+            "- This leads to **high waiting times** for short jobs.",
+            "- **Convoy effect** occurs, degrading system responsiveness.",
+            "- **Not suitable for interactive systems**.",
+            "Solution: **Preemptive scheduling (e.g., Shortest Remaining Time First - SRTF)** helps avoid this problem."
+        ],
+        "qText": "Why is FIFO sometimes inefficient?"
+    },
+    {
+        "qId": "sched027",
+        "answers": [
+            "**Worst-case scenario for FIFO:**",
+            "- A single **long job** arrives first and delays all subsequent jobs.",
+            "- The system becomes unresponsive to short jobs.",
+            "- Causes **poor response time** in interactive environments.",
+            "Example:",
+            "- **J1 (200s), J2 (10s), J3 (10s)**",
+            "- J2 and J3 are forced to wait **200s** before execution."
+        ],
+        "qText": "What is the worst-case scenario for FIFO scheduling?"
+    },
+    {
+        "qId": "sched028",
+        "answers": [
+            "The **average turnaround time** in FIFO is calculated as:",
+            "Turnaround Time = Completion Time - Arrival Time",
+            "Example:",
+            "Jobs: **J1 (100s), J2 (10s), J3 (10s)**",
+            "- **J1 completes at 100s**",
+            "- **J2 completes at 110s**",
+            "- **J3 completes at 120s**",
+            "Average Turnaround Time = (100 + 110 + 120) / 3 = **110 seconds**."
+        ],
+        "qText": "What is the average turnaround time when jobs have different lengths in FIFO scheduling?"
+    },
+    {
+        "qId": "sched029",
+        "answers": [
+            "**Shortest Job First (SJF) Scheduling** helps mitigate the convoy effect by executing shorter jobs first.",
+            "- **Minimizes average turnaround time** by prioritizing small jobs.",
+            "- **Preemptive SJF (Shortest Remaining Time First - SRTF)** further optimizes performance.",
+            "Example in C implementing SJF:",
+            "```c\n#include <stdio.h>\nvoid sjf(int jobs[], int n) {\n    int waitTime = 0, totalWait = 0;\n    for (int i = 0; i < n; i++) {\n        printf(\"Job %d waiting time: %d\\n\", i + 1, waitTime);\n        totalWait += waitTime;\n        waitTime += jobs[i];\n    }\n    printf(\"Average Waiting Time: %.2f\\n\", (float)totalWait / n);\n}\nint main() {\n    int jobs[] = {2, 3, 8, 6}; // Shortest first\n    int n = sizeof(jobs) / sizeof(jobs[0]);\n    sjf(jobs, n);\n    return 0;\n}\n```"
+        ],
+        "qText": "What scheduling strategy can help mitigate the convoy effect?"
+    },
+    {
+        "qId": "sched030",
+        "answers": [
+            "A **grocery store checkout line** is similar to scheduling policies in operating systems.",
+            "- **Express lanes (10 items or less)** = **Shortest Job First (SJF)** → Prioritizes shorter transactions.",
+            "- **FIFO checkout lines** = **First-Come, First-Served (FCFS)** → Customers are served in arrival order.",
+            "- **Self-checkout** = **Multithreading** → Multiple tasks are processed in parallel."
+        ],
+        "qText": "How does a grocery store checkout line relate to scheduling policies?"
+    },
+    {
+        "qId": "sched031",
+        "answers": [
+            "**FIFO is fair in order but not in efficiency.**",
+            "- **Fairness**: Jobs are executed in arrival order, preventing starvation.",
+            "- **Unfair to short jobs**: A long job can delay all others, leading to inefficiency.",
+            "- **Example**: A 100s job arriving first makes a 5s job wait 100s."
+        ],
+        "qText": "Is FIFO a fair scheduling policy? Why or why not?"
+    },
+    {
+        "qId": "sched032",
+        "answers": [
+            "**FIFO does not allow preemption.**",
+            "- **Non-preemptive**: Once a job starts, it runs to completion before the next job begins.",
+            "- **Problem**: Long jobs block shorter jobs, increasing average waiting time.",
+            "- **Alternative**: Preemptive scheduling (e.g., **Round Robin or SRTF**) can prevent this."
+        ],
+        "qText": "Does FIFO allow preemption?"
+    },
+    {
+        "qId": "sched033",
+        "answers": [
+            "FIFO scheduling is also known as **First Come, First Served (FCFS).**",
+            "- Jobs are scheduled in arrival order.",
+            "- **No priority or preemption.**",
+            "- **Simple but inefficient for long jobs.**"
+        ],
+        "qText": "What is another name for FIFO scheduling?"
+    },
+    {
+        "qId": "sched034",
+        "answers": [
+            "**Yes, FIFO is non-preemptive.**",
+            "- Once a job starts, it **cannot be interrupted** until completion.",
+            "- This leads to **long waiting times** for shorter jobs.",
+            "- **Example**: A 5s job arriving after a 100s job must wait 100s."
+        ],
+        "qText": "Is FIFO a non-preemptive scheduling algorithm?"
+    },
+    {
+        "qId": "sched035",
+        "answers": [
+            "**FIFO performance worsens when jobs arrive at different times.**",
+            "- **Early jobs block later jobs**.",
+            "- **Long jobs arriving first cause high waiting time**.",
+            "- **Preemptive scheduling (Round Robin, SRTF) can help.**",
+            "Example:",
+            "- **J1(50s) arrives at t=0, J2(5s) arrives at t=10**.",
+            "- J2 **must wait 40s** before execution."
+        ],
+        "qText": "How does FIFO performance change if jobs arrive at different times?"
+    },
+    {
+        "qId": "sched036",
+        "answers": [
+            "The convoy effect in scheduling occurs when shorter tasks are forced to wait behind a long-running task, causing unnecessary delays. This is similar to a slow-moving vehicle on a single-lane road, where faster cars are stuck behind it, unable to overtake. In real-world scenarios, this effect is noticeable in customer service lines, manufacturing assembly lines, and network packet transmission. For instance, in a retail checkout line, if a customer with a large number of items is being processed, customers with fewer items must wait longer than necessary. In computing, the convoy effect can degrade user experience by increasing response times, causing sluggish performance in time-sensitive applications."
+        ],
+        "qText": "How does the convoy effect impact user experience in real-world scenarios?"
+    },
+    {
+        "qId": "sched037",
+        "answers": [
+            "The convoy effect significantly impacts system performance by increasing waiting times for shorter jobs. This happens when a long-running process is executed first, forcing all shorter tasks to wait. As a result, CPU utilization drops, throughput decreases, and overall efficiency suffers. Consider a simple C program that demonstrates the impact of a long-running job blocking shorter tasks:\n\n```c\n#include <stdio.h>\n#include <unistd.h>\n#include <sys/wait.h>\n\nint main() {\n    if (fork() == 0) {\n        // Simulating a long job\n        printf(\"Long job started...\n\");\n        sleep(10);\n        printf(\"Long job finished.\n\");\n    } else {\n        wait(NULL); // Short jobs forced to wait\n        for (int i = 0; i < 3; i++) {\n            if (fork() == 0) {\n                printf(\"Short job %d executed.\n\", i+1);\n                return 0;\n            }\n            wait(NULL);\n        }\n    }\n    return 0;\n}\n```\n\nIn this example, a long job (sleeping for 10 seconds) executes first, making the shorter jobs wait unnecessarily, illustrating the convoy effect."
+        ],
+        "qText": "How does the convoy effect impact system performance?"
+    },
+    {
+        "qId": "sched038",
+        "answers": [
+            "Shortest Job First (SJF) is often preferred over First In, First Out (FIFO) because it minimizes the average waiting time by executing the shortest processes first. This scheduling method improves efficiency, as shorter jobs finish quickly, reducing the number of processes waiting in the queue. Consider the following example:\n\n```c\n#include <stdio.h>\n\nvoid sjfScheduling(int jobs[], int n) {\n    int waitTime = 0, totalWaitTime = 0;\n    for (int i = 0; i < n; i++) {\n        printf(\"Executing job with duration %d\n\", jobs[i]);\n        totalWaitTime += waitTime;\n        waitTime += jobs[i];\n    }\n    printf(\"Average waiting time: %.2f\n\", (float)totalWaitTime / n);\n}\n\nint main() {\n    int jobs[] = {2, 4, 1, 3};\n    int n = sizeof(jobs) / sizeof(jobs[0]);\n    sjfScheduling(jobs, n);\n    return 0;\n}\n```\n\nThis program executes shorter jobs first, reducing overall waiting time compared to FIFO, where jobs execute in arrival order regardless of length."
+        ],
+        "qText": "Why is Shortest Job First (SJF) often preferred over FIFO?"
+    },
+    {
+        "qId": "sched039",
+        "answers": [
+            "In FIFO (First In, First Out) scheduling, a job's turnaround time is determined by the time it arrives and when all preceding jobs finish execution. Turnaround time is calculated as:\n\n    Turnaround Time = Completion Time - Arrival Time\n\nFor example, consider a queue of jobs with execution times:\n\n| Job | Arrival Time | Execution Time | Completion Time | Turnaround Time |\n|-----|-------------|---------------|----------------|----------------|\n| A   | 0           | 5             | 5              | 5              |\n| B   | 1           | 3             | 8              | 7              |\n| C   | 2           | 2             | 10             | 8              |\n\nHere, each job’s turnaround time is directly affected by when it starts executing, which depends on when the preceding jobs finish."
+        ],
+        "qText": "How does FIFO determine a job's turnaround time?"
+    },
+    {
+        "qId": "sched040",
+        "answers": [
+            "If a long-running job arrives first in FIFO scheduling, all subsequent shorter jobs are forced to wait until it completes, causing inefficiency. This can be demonstrated through a simple scheduling simulation:\n\n```c\n#include <stdio.h>\n\nint main() {\n    int jobs[] = {10, 2, 1, 3}; // Long job first\n    int waitTime = 0, totalWaitTime = 0;\n    for (int i = 0; i < 4; i++) {\n        printf(\"Executing job with duration %d\n\", jobs[i]);\n        totalWaitTime += waitTime;\n        waitTime += jobs[i];\n    }\n    printf(\"Average waiting time: %.2f\n\", (float)totalWaitTime / 4);\n    return 0;\n}\n```\n\nHere, the first job (10 seconds) causes all shorter jobs to wait unnecessarily, making the system inefficient."
+        ],
+        "qText": "What happens if a long-running job arrives first in FIFO scheduling?"
+    },
+    {
+        "qId": "sched041",
+        "answers": [
+            "Shortest Job First (SJF) is a CPU scheduling algorithm that selects the process with the smallest execution time to run next. If two processes have the same duration, FIFO order is used as a tie-breaker. SJF can be implemented in both preemptive (Shortest Remaining Time First) and non-preemptive forms. The algorithm significantly reduces waiting times compared to FIFO."
+        ],
+        "qText": "What is Shortest Job First (SJF) scheduling?"
+    },
+    {
+        "qId": "sched042",
+        "answers": [
+            "The main advantage of Shortest Job First (SJF) scheduling is that it minimizes the average turnaround time by prioritizing shorter jobs. This leads to higher efficiency, especially in batch processing systems. However, SJF can lead to starvation if new short jobs keep arriving, preventing long jobs from execution indefinitely."
+        ],
+        "qText": "What is the main advantage of SJF scheduling?"
+    },
+    {
+        "qId": "sched043",
+        "answers": [
+            "Shortest Job First (SJF) is optimal under the assumption that all jobs arrive at the same time and their runtimes are known in advance. This ensures that the scheduler can always select the shortest job first, reducing the average waiting time and turnaround time. \n\nIn real-world scenarios, job execution times are often unpredictable, making it difficult to apply SJF optimally. However, if all jobs arrive at the same moment and their execution times are available, SJF provides the best possible scheduling order to minimize delays."
+        ],
+        "qText": "Under what conditions is SJF an optimal scheduling algorithm?"
+    },
+    {
+        "qId": "sched044",
+        "answers": [
+            "If all jobs arrive simultaneously, the Shortest Job First (SJF) scheduling algorithm sorts the jobs based on their burst times and executes the shortest job first. Once a job finishes, the next shortest job is executed, and this continues until all jobs are completed.\n\nThe goal is to minimize the average waiting time and turnaround time. Here is a simple C program to demonstrate SJF scheduling when all jobs arrive at the same time:\n\n```c\n#include <stdio.h>\nvoid main() {\n    int n, i, j, temp;\n    printf(\"Enter number of jobs: \");\n    scanf(\"%d\", &n);\n    int bt[n], wt[n], tat[n];\n    printf(\"Enter burst times: \");\n    for(i = 0; i < n; i++) scanf(\"%d\", &bt[i]);\n    \n    // Sorting jobs by burst time (SJF Scheduling)\n    for(i = 0; i < n - 1; i++) {\n        for(j = i + 1; j < n; j++) {\n            if(bt[i] > bt[j]) {\n                temp = bt[i]; bt[i] = bt[j]; bt[j] = temp;\n            }\n        }\n    }\n    \n    wt[0] = 0;\n    for(i = 1; i < n; i++) wt[i] = wt[i - 1] + bt[i - 1];\n    for(i = 0; i < n; i++) tat[i] = wt[i] + bt[i];\n    \n    printf(\"\\nJob\\tBurst Time\\tWaiting Time\\tTurnaround Time\\n\");\n    for(i = 0; i < n; i++)\n        printf(\"%d\\t%d\\t%d\\t%d\\n\", i+1, bt[i], wt[i], tat[i]);\n}\n```"
+        ],
+        "qText": "How does SJF work when all jobs arrive simultaneously?"
+    },
+    {
+        "qId": "sched045",
+        "answers": [
+            "SJF performs better than FIFO (First In, First Out) in many cases because it minimizes the average waiting time by reducing delays caused by longer jobs. \n\nIn FIFO, jobs are executed in the order they arrive, which can lead to the convoy effect, where shorter jobs have to wait behind a long-running job. In contrast, SJF prioritizes shorter jobs, reducing the time they spend in the queue.\n\nConsider this example:\n\n- FIFO: If jobs have burst times of [10, 2, 3], the waiting times will be 0, 10, and 12, leading to an average of (0+10+12)/3 = 7.33 units.\n- SJF: Sorting the jobs as [2, 3, 10], the waiting times will be 0, 2, and 5, leading to an average of (0+2+5)/3 = 2.33 units.\n\nThis shows that SJF significantly reduces waiting time and improves efficiency."
+        ],
+        "qText": "Why does SJF perform better than FIFO in many cases?"
+    },
+    {
+        "qId": "sched046",
+        "answers": [
+            "SJF does not completely eliminate the convoy effect. If a long job arrives before shorter jobs, the shorter jobs still have to wait, leading to increased turnaround time.\n\nThis is particularly problematic in non-preemptive SJF, where once a long job starts executing, it must finish before any other job can run. The convoy effect is better handled by preemptive scheduling techniques like Shortest Remaining Time First (SRTF)."
+        ],
+        "qText": "Does SJF completely eliminate the convoy effect?"
+    },
+    {
+        "qId": "sched047",
+        "answers": [
+            "Non-preemptive Shortest Job First (SJF) is a scheduling algorithm in which once a job starts executing, it runs to completion before another job can run. The scheduler selects the shortest job available and executes it entirely before moving to the next one.\n\nThis method reduces average waiting time but can cause issues if a long job arrives before several short jobs, leading to higher turnaround times for those shorter jobs."
+        ],
+        "qText": "What is non-preemptive SJF?"
+    },
+    {
+        "qId": "sched048",
+        "answers": [
+            "Preemptive SJF, also known as Shortest Remaining Time First (SRTF), is a scheduling algorithm that allows a running job to be interrupted if a new job with a shorter burst time arrives. \n\nThis approach helps minimize waiting time for shorter jobs and can prevent long jobs from blocking shorter ones. However, it requires knowing job burst times in advance and can lead to frequent context switching, impacting system performance."
+        ],
+        "qText": "What is preemptive SJF?"
+    },
+    {
+        "qId": "sched049",
+        "answers": [
+            "In SJF, if a long job arrives before shorter jobs, those shorter jobs must wait until the long job completes. This results in higher turnaround times for the shorter jobs, similar to the convoy effect in FIFO scheduling.\n\nTo avoid this issue, preemptive SJF (SRTF) is used, where a long job can be interrupted if a shorter job arrives."
+        ],
+        "qText": "What happens in SJF if a long job arrives before shorter jobs?"
+    },
+    {
+        "qId": "sched050",
+        "answers": [
+            "Yes, preemptive SJF (Shortest Remaining Time First) can help solve the convoy effect problem. If a long-running job is executing and a shorter job arrives, the scheduler preempts the current job and executes the shorter one first. This reduces waiting times for short jobs and improves overall system efficiency."
+        ],
+        "qText": "Can preemptive SJF solve the convoy effect problem?"
+    },
+    {
+        "qId": "sched051",
+        "answers": [
+            "Shortest Remaining Time First (SRTF) is a preemptive version of Shortest Job First (SJF). The key difference is:\n\n- **Non-preemptive SJF**: Once a job starts execution, it runs to completion without interruption.\n- **Preemptive SJF (SRTF)**: If a new job arrives with a shorter burst time than the remaining time of the currently running job, the scheduler preempts the current job and executes the shorter one.\n\nSRTF provides better response times but requires more complex scheduling and can result in frequent context switching."
+        ],
+        "qText": "How does Shortest Remaining Time First (SRTF) differ from non-preemptive SJF?"
+    },
+    {
+        "qId": "sched052",
+        "answers": [
+            "The biggest limitation of SJF scheduling is that the scheduler needs to know the burst time of each job in advance. In real-world systems, this information is often unavailable or estimated inaccurately, leading to inefficiencies.\n\nAnother issue is starvation: if new short jobs keep arriving, longer jobs may be delayed indefinitely, causing unfair scheduling. Preemptive SJF (SRTF) partially mitigates this but still faces challenges with job execution time predictions."
+        ],
+        "qText": "What is the biggest limitation of SJF scheduling?"
+    },
+    {
+        "qId": "sched053",
+        "answers": [
+            "Preemptive Shortest Job First (SJF) is preferred in interactive environments because it allows shorter jobs (typically user interactions) to interrupt long-running jobs. This reduces response times for interactive tasks, making the system more responsive.\n\nFor example, in a multitasking operating system, if a long background process is running and a short user request arrives, preemptive SJF (or Shortest Remaining Time First, SRTF) can pause the background process and handle the user request first, improving user experience."
+        ],
+        "qText": "Why is preemptive SJF preferred in interactive environments?"
+    },
+    {
+        "qId": "sched054",
+        "answers": [
+            "SJF is not a fair scheduling algorithm because it can lead to starvation. If short jobs keep arriving, long-running jobs may never get scheduled, leading to indefinite delays.\n\nFor example, consider a scenario where a long job is waiting in the queue, but new shorter jobs keep arriving. Since SJF always prioritizes the shortest job, the long job may be postponed indefinitely."
+        ],
+        "qText": "Is SJF a fair scheduling algorithm? Why or why not?"
+    },
+    {
+        "qId": "sched055",
+        "answers": [
+            "A major drawback of Shortest Job First (SJF) scheduling is the possibility of starvation. Long jobs may suffer indefinite waiting times if a constant stream of short jobs keeps arriving.\n\nThis issue is particularly problematic in systems with a heavy mix of short and long tasks, where long tasks might never get CPU time."
+        ],
+        "qText": "What is a major drawback of SJF scheduling?"
+    },
+    {
+        "qId": "sched056",
+        "answers": [
+            "Starvation in SJF can be prevented by using **aging**, a technique where the priority of a job increases as it waits in the queue. Over time, even long jobs get a chance to execute.\n\nAging gradually increases the priority of long-waiting jobs, ensuring they eventually get scheduled, even if shorter jobs keep arriving."
+        ],
+        "qText": "How can starvation in SJF be prevented?"
+    },
+    {
+        "qId": "sched057",
+        "answers": [
+            "In preemptive SJF, when a new shorter job arrives while a longer job is running, the running job is **paused** and placed back in the queue. The newly arrived shorter job starts execution immediately.\n\nThis ensures that the system always executes the job with the shortest remaining execution time, reducing average waiting time."
+        ],
+        "qText": "What happens in preemptive SJF when a new shorter job arrives?"
+    },
+    {
+        "qId": "sched058",
+        "answers": [
+            "The **average turnaround time** in SJF scheduling is calculated as:\n\n\\[ \\text{Average Turnaround Time} = \\frac{\\sum (\\text{Completion Time} - \\text{Arrival Time})}{\\text{Total Jobs}} \\]\n\nFor example, if three jobs have turnaround times of 10, 20, and 120 seconds, the average turnaround time is:\n\n\\[ (10 + 20 + 120) / 3 = 50 \\] seconds."
+        ],
+        "qText": "How is average turnaround time calculated in SJF scheduling?"
+    },
+    {
+        "qId": "sched059",
+        "answers": [
+            "SJF is **not always** the best scheduling algorithm. It works optimally **only** when all jobs arrive at the same time and their runtimes are known in advance.\n\nIn real-world systems, job execution times are not always predictable, making SJF difficult to implement effectively. Additionally, SJF suffers from starvation, making it less suitable for general-purpose scheduling."
+        ],
+        "qText": "Is SJF always the best scheduling algorithm?"
+    },
+    {
+        "qId": "sched060",
+        "answers": [
+            "The primary goal of Shortest Job First (SJF) scheduling is to **minimize average turnaround time** by prioritizing shorter jobs over longer ones. \n\nBy doing so, SJF reduces the total time jobs spend waiting in the queue, leading to improved overall system efficiency."
+        ],
+        "qText": "What is the main goal of SJF scheduling?"
+    },
+    {
+        "qId": "sched061",
+        "answers": [
+            "Shortest Time-to-Completion First (STCF) is a **preemptive scheduling algorithm** that always runs the job with the **least remaining execution time**.\n\nIf a new job arrives with a shorter remaining execution time than the currently running job, the scheduler **preempts** the current job and switches to the new job."
+        ],
+        "qText": "What is Shortest Time-to-Completion First (STCF) scheduling?"
+    },
+    {
+        "qId": "sched062",
+        "answers": [
+            "STCF differs from non-preemptive SJF because it allows jobs to be **preempted** if a new job with a shorter remaining execution time arrives.\n\n- **Non-preemptive SJF**: Once a job starts execution, it runs to completion.\n- **STCF (Preemptive SJF)**: If a shorter job arrives, it interrupts the currently running job, reducing wait times for short jobs."
+        ],
+        "qText": "How does STCF differ from non-preemptive SJF?"
+    },
+    {
+        "qId": "sched063",
+        "answers": [
+            "Yes, Shortest Time-to-Completion First (STCF) is also known as **Preemptive Shortest Job First (PSJF)**. \n\nBoth terms refer to the same scheduling strategy where the CPU always executes the job with the shortest remaining execution time."
+        ],
+        "qText": "Is STCF the same as Preemptive Shortest Job First (PSJF)?"
+    },
+    {
+        "qId": "sched064",
+        "answers": [
+            "The main advantage of Shortest Time-to-Completion First (STCF) is that it **minimizes the average turnaround time** by ensuring that the job with the shortest remaining execution time always runs first.\n\nThis leads to better overall system performance, particularly in environments where short jobs arrive frequently."
+        ],
+        "qText": "What is the main advantage of STCF scheduling?"
+    },
+    {
+        "qId": "sched065",
+        "answers": [
+            "STCF improves average turnaround time by ensuring that shorter jobs complete **as quickly as possible**. \n\nSince the scheduler always selects the job with the least remaining execution time, shorter jobs experience minimal waiting time, leading to improved overall system responsiveness."
+        ],
+        "qText": "How does STCF improve average turnaround time?"
+    },
+    {
+        "qId": "sched066",
+        "answers": [
+            "In Shortest Time-to-Completion First (STCF), also known as Preemptive Shortest Job First (PSJF), when a shorter job arrives while a long job is running, the currently running long job is **paused**, and the shorter job is executed first.\n\nThis ensures that the system always executes the job with the least remaining execution time, minimizing overall turnaround time. Once the shorter job completes, the long job resumes execution from where it was paused.\n\n**Example:**\n- Suppose a job J1 with a burst time of 10ms starts execution.\n- After 2ms, a shorter job J2 (burst time: 3ms) arrives.\n- The scheduler **pauses** J1 and runs J2 first.\n- Once J2 completes, J1 resumes execution from the 2ms mark."
+        ],
+        "qText": "What happens in STCF when a shorter job arrives while a long job is running?"
+    },
+    {
+        "qId": "sched067",
+        "answers": [
+            "Shortest Time-to-Completion First (STCF) is **provably optimal** in terms of minimizing **average turnaround time**, but only under specific conditions:\n\n1. **All job runtimes are known in advance**: The scheduler must have prior knowledge of each job's execution time.\n2. **Turnaround time is the only metric considered**: If response time or fairness were considered, other scheduling strategies might be preferable.\n3. **Jobs arrive at different times**: STCF works well when jobs arrive at different times since it dynamically adjusts execution order based on remaining execution time.\n\nUnder these conditions, STCF ensures that the average turnaround time is the lowest possible."
+        ],
+        "qText": "Under what conditions is STCF an optimal scheduling algorithm?"
+    },
+    {
+        "qId": "sched068",
+        "answers": [
+            "In scheduling, **response time** is defined as the time from when a job **arrives** in the system to when it **starts execution for the first time**.\n\nIt can be calculated as:\n\\[ \\text{Response Time} = \\text{Start Time} - \\text{Arrival Time} \\]\n\n**Example:**\n- A job arrives at time **0ms** but starts execution at **5ms**.\n- The response time is **5ms**."
+        ],
+        "qText": "What is response time in scheduling?"
+    },
+    {
+        "qId": "sched069",
+        "answers": [
+            "STCF is **not optimal for response time** because later-arriving jobs may have to wait a long time before getting CPU time.\n\n- If a long job is running and multiple shorter jobs arrive, they will **preempt** each other.\n- This causes longer response times for jobs arriving later, as they must wait until all shorter jobs finish execution before they get CPU time.\n\n**Example:**\n- A long job J1 starts execution at **0ms**.\n- Three shorter jobs J2, J3, and J4 arrive at **different times** and keep preempting J1.\n- J1 might experience a **very high response time** since it keeps getting pushed back."
+        ],
+        "qText": "Why is STCF not optimal for response time?"
+    },
+    {
+        "qId": "sched070",
+        "answers": [
+            "When multiple jobs arrive **at the same time** in STCF, response time for larger jobs can be **very high** because shorter jobs will be scheduled first.\n\n- The job with the shortest execution time runs first.\n- Other jobs must **wait** until all shorter jobs complete before they can begin execution.\n\n**Example:**\n- Three jobs arrive at **time 0ms**:\n  - J1 (burst time: **10ms**)\n  - J2 (burst time: **3ms**)\n  - J3 (burst time: **1ms**)\n- STCF runs **J3 → J2 → J1**.\n- **J1 has to wait for 1ms + 3ms = 4ms before it starts execution**, leading to a high response time."
+        ],
+        "qText": "What happens to response time when multiple jobs arrive at the same time in STCF?"
+    },
+    {
+        "qId": "sched071",
+        "answers": [
+            "Early **batch processing systems** benefited from STCF because they prioritized **overall efficiency** rather than user interaction.\n\n- These systems aimed to **minimize overall job completion time**.\n- Since jobs were submitted in batches, fairness and interactivity were **not major concerns**.\n- STCF helped optimize CPU utilization by reducing total turnaround time."
+        ],
+        "qText": "Why was STCF suitable for early batch computing systems?"
+    },
+    {
+        "qId": "sched072",
+        "answers": [
+            "Modern **interactive systems** require **low response times**, which STCF does not guarantee.\n\n- In interactive environments, **user inputs must be processed quickly**.\n- STCF prioritizes the **shortest remaining job**, but this can lead to high response times for new jobs that arrive later.\n- For this reason, modern systems often use **Round Robin (RR)** or **Multilevel Feedback Queues (MLFQ)** instead of STCF."
+        ],
+        "qText": "Why is STCF not ideal for interactive systems?"
+    },
+    {
+        "qId": "sched073",
+        "answers": [
+            "The main trade-off when using Shortest Time-to-Completion First (STCF) is between **turnaround time** and **waiting time for long jobs**.\n\n- **Advantage:** STCF minimizes the **average turnaround time** by ensuring that the shortest remaining job always runs first.\n- **Disadvantage:** Long-running jobs may suffer from **starvation** if shorter jobs keep arriving, leading to higher waiting times for those jobs.\n\nThis trade-off makes STCF ideal for batch processing but less suitable for interactive systems where fairness is important."
+        ],
+        "qText": "What is the trade-off when using STCF?"
+    },
+    {
+        "qId": "sched074",
+        "answers": [
+            "STCF (Shortest Time-to-Completion First) **schedules the job with the shortest remaining execution time**.\n\nAt any given moment, the scheduler evaluates all jobs in the queue and picks the one with the lowest remaining execution time.\n\n**Example:**\n- Suppose there are three jobs:\n  - J1 (Remaining Time: 8ms)\n  - J2 (Remaining Time: 3ms)\n  - J3 (Remaining Time: 5ms)\n- The scheduler picks **J2** because it has the shortest remaining execution time."
+        ],
+        "qText": "How does STCF decide which job to schedule?"
+    },
+    {
+        "qId": "sched075",
+        "answers": [
+            "Yes, STCF can cause **starvation** if a long job keeps getting **preempted** by shorter jobs.\n\n- If new short jobs continue to arrive, they will always take priority over longer jobs.\n- This means long jobs might **never get CPU time** until short jobs stop arriving.\n\n**Example:**\n- A long job J1 (Execution Time: 50ms) starts execution.\n- A series of shorter jobs (1ms, 2ms, 3ms, etc.) keep arriving.\n- J1 gets **delayed indefinitely** because every new short job preempts it."
+        ],
+        "qText": "Does STCF cause starvation?"
+    },
+    {
+        "qId": "sched076",
+        "answers": [
+            "Starvation in STCF can be prevented using **priority-based aging**, where the priority of long-waiting jobs **gradually increases** over time.\n\n- The longer a job waits in the queue, the higher its priority becomes.\n- Eventually, the priority of a long job **surpasses that of shorter jobs**, ensuring it gets CPU time.\n\nThis method helps balance efficiency with fairness, making STCF more practical in real-world scheduling."
+        ],
+        "qText": "How can starvation be prevented in STCF?"
+    },
+    {
+        "qId": "sched077",
+        "answers": [
+            "STCF requires **frequent context switching** because it constantly **preempts running jobs** whenever a new job with a shorter remaining time arrives.\n\n- Every time a new job arrives, the scheduler **compares remaining execution times**.\n- If the new job has a shorter remaining time, it **preempts** the current job.\n- This frequent switching incurs **overhead**, increasing CPU load and reducing efficiency."
+        ],
+        "qText": "Why does STCF require frequent context switching?"
+    },
+    {
+        "qId": "sched078",
+        "answers": [
+            "STCF determines the next job to run by **calculating the remaining execution time** for all jobs in the system and choosing the job with the least remaining time.\n\nThis ensures that shorter jobs are completed as quickly as possible, reducing average turnaround time.\n\n**Algorithm:**\n1. Check all available jobs in the system.\n2. Select the job with the **smallest remaining execution time**.\n3. If a new job arrives and has a **shorter remaining time** than the current job, **preempt the running job**."
+        ],
+        "qText": "How does STCF determine which job to run next?"
+    },
+    {
+        "qId": "sched079",
+        "answers": [
+            "STCF preempts a running job **whenever a new job arrives with a shorter remaining execution time**.\n\n**Example:**\n- J1 starts execution (Remaining Time: 8ms).\n- A new job J2 arrives (Remaining Time: 3ms).\n- The scheduler **preempts J1** and starts running J2 immediately.\n\nThis ensures that the **shortest job always runs first**, reducing overall turnaround time but possibly increasing context switching overhead."
+        ],
+        "qText": "When does STCF preempt a running job?"
+    },
+    {
+        "qId": "sched080",
+        "answers": [
+            "The primary goal of STCF scheduling is to **minimize average turnaround time**.\n\n- By always selecting the job with the **shortest remaining execution time**, STCF ensures that smaller jobs finish quickly.\n- This results in a lower **average turnaround time** compared to First Come First Serve (FCFS) or Round Robin (RR)."
+        ],
+        "qText": "What is the primary goal of STCF scheduling?"
+    },
+    {
+        "qId": "sched081",
+        "answers": [
+            "Round Robin (RR) is a **CPU scheduling algorithm** that assigns a **fixed time slice** (quantum) to each process and cycles through them in a circular manner.\n\n**How it works:**\n- Each process runs for a maximum of the time slice.\n- If a process does not complete within its time slice, it is **preempted** and moved to the back of the queue.\n- This ensures **fairness** and prevents starvation.\n\n**Example:**\n- Time slice: 5ms\n- Processes: P1 (10ms), P2 (4ms), P3 (8ms)\n- Execution order: P1 (5ms) → P2 (4ms) → P3 (5ms) → P1 (5ms) → P3 (3ms)"
+        ],
+        "qText": "What is Round Robin (RR) scheduling?"
+    },
+    {
+        "qId": "sched082",
+        "answers": [
+            "Round Robin (RR) and Shortest Job First (SJF) differ in how they schedule processes:\n\n| Feature | Round Robin (RR) | Shortest Job First (SJF) |\n|---------|----------------|------------------|\n| Scheduling Basis | Fixed time slices | Shortest job first |\n| Preemption | Yes (after time slice) | Depends on type (Preemptive/Non-preemptive) |\n| Fairness | High (all jobs get CPU time) | Low (long jobs may starve) |\n| Context Switching | High (frequent switching) | Low (depends on arrival order) |\n\n- **RR is better for interactive systems**, ensuring all processes get CPU time.\n- **SJF minimizes turnaround time**, making it better for batch processing."
+        ],
+        "qText": "How does Round Robin differ from Shortest Job First (SJF) scheduling?"
+    },
+    {
+        "qId": "sched083",
+        "answers": [
+            "A **time slice** (also called **quantum**) in Round Robin scheduling is the **fixed amount of time** each process is allowed to run before being preempted.\n\n- If a process **completes within the time slice**, it exits.\n- If not, it is **moved to the end of the queue**, and the next process is scheduled.\n\n**Example:**\n- Time slice = 4ms\n- P1 (Execution time: 10ms), P2 (Execution time: 6ms)\n- Execution order: P1 (4ms) → P2 (4ms) → P1 (4ms) → P2 (2ms)"
+        ],
+        "qText": "What is a time slice in Round Robin scheduling?"
+    },
+    {
+        "qId": "sched084",
+        "answers": [
+            "Reducing the time slice in Round Robin **affects performance in two ways**:\n\n1. **Improves Response Time:**\n   - Jobs switch more frequently, allowing interactive tasks to get CPU time sooner.\n2. **Increases Context Switching Overhead:**\n   - Frequent preemptions lead to **higher CPU overhead**, reducing overall efficiency.\n\n**Trade-off:** A very small time slice improves responsiveness but **wastes CPU cycles on switching**."
+        ],
+        "qText": "How does reducing the time slice affect Round Robin performance?"
+    },
+    {
+        "qId": "sched085",
+        "answers": [
+            "Increasing the **time slice** in Round Robin (RR) has two major effects:\n\n1. **Reduces Context Switching Overhead:**\n   - Longer time slices mean fewer **preemptions**, which reduces the number of context switches.\n   - This improves CPU efficiency as less time is spent switching between processes.\n\n2. **Increases Response Time for Interactive Tasks:**\n   - If the time slice is **too long**, short interactive tasks may have to wait longer before execution.\n\n**Trade-off:** Choosing the right time slice is critical. A **very long time slice** makes RR behave like **FCFS (First-Come, First-Served)**, leading to poor responsiveness."
+        ],
+        "qText": "How does increasing the time slice affect Round Robin performance?"
+    },
+    {
+        "qId": "sched086",
+        "answers": [
+            "An **ideal time slice** in Round Robin (RR) should balance **efficiency** and **responsiveness**:\n\n- It should be **long enough** to reduce **context switching overhead**.\n- It should be **short enough** to ensure **interactive tasks** receive quick CPU access.\n\n**Typical Guidelines:**\n- The time slice should be **slightly longer than the average context switch time** to minimize overhead.\n- It should also be **shorter than the execution time of most processes** to ensure fair CPU sharing.\n\n**Example:**\n- If context switching takes 1ms, a time slice of **20–50ms** is generally a good choice."
+        ],
+        "qText": "What is an ideal time slice for Round Robin scheduling?"
+    },
+    {
+        "qId": "sched087",
+        "answers": [
+            "If the **time slice is too short**, the following problems occur:\n\n1. **Frequent Context Switching Overhead:**\n   - More **time is wasted** on saving/restoring process states rather than running actual tasks.\n   \n2. **Inefficient CPU Utilization:**\n   - Processes spend more time **waiting** for their next turn rather than executing efficiently.\n\n**Example:**\n- If the time slice is **2ms** but a context switch takes **1ms**, then **50% of CPU time** is wasted on switching!"
+        ],
+        "qText": "What happens if the time slice in Round Robin is too short?"
+    },
+    {
+        "qId": "sched088",
+        "answers": [
+            "Round Robin (RR) is considered a **fair scheduling algorithm** because it ensures that **every process gets an equal opportunity** to use the CPU.\n\n- Each process **receives CPU time** for a fixed **time slice**.\n- If a process is not completed within its time slice, it is **moved to the end of the queue**, and the next process gets CPU time.\n\n**Fairness Principle:**\n- Unlike **SJF**, which favors short jobs, RR **treats all processes equally**, preventing starvation.\n- **No single process can monopolize CPU time**, making it **ideal for multi-user systems**."
+        ],
+        "qText": "Why is Round Robin considered a fair scheduling algorithm?"
+    },
+    {
+        "qId": "sched089",
+        "answers": [
+            "Round Robin (RR) has **poor turnaround time** compared to Shortest Job First (SJF) because **jobs are frequently interrupted**.\n\n**Key Issues:**\n1. **Context Switching Overhead:**\n   - Since RR repeatedly preempts processes, jobs take longer to complete.\n   \n2. **Multiple Rounds to Completion:**\n   - A long job may have to **wait multiple cycles** to finish, increasing **turnaround time**.\n\n**Example:**\n- If P1 requires **20ms** and the time slice is **5ms**:\n  - In SJF, P1 finishes in **20ms**.\n  - In RR, P1 runs in **4 cycles (5ms each)**, increasing turnaround time."
+        ],
+        "qText": "Why does Round Robin have poor turnaround time compared to SJF?"
+    },
+    {
+        "qId": "sched090",
+        "answers": [
+            "Round Robin (RR) improves **response time** because **every process gets scheduled quickly**, preventing long waits.\n\n- Unlike **FCFS**, where later processes may wait a long time, RR ensures **each process gets CPU access within one time slice**.\n- This is especially useful for **interactive systems**, where **quick response times** improve user experience.\n\n**Example:**\n- If 10 processes arrive at the same time:\n  - **In FCFS:** The 10th process may have to wait until all 9 others finish.\n  - **In RR:** Each process gets CPU time **early**, preventing long initial delays."
+        ],
+        "qText": "How does Round Robin improve response time?"
+    },
+    {
+        "qId": "sched091",
+        "answers": [
+            "Round Robin (RR) is preferred in **interactive systems** because it ensures **quick response times** and prevents **CPU monopolization**.\n\n**Why it works well:**\n- **Preemption ensures fairness** → No single process dominates CPU time.\n- **Regular time slices** → Each user/process gets a turn quickly.\n- **Responsive system behavior** → Users don’t experience long delays.\n\n**Example:**\n- In a **time-sharing OS**, RR ensures that user applications (e.g., text editors, browsers) get **frequent CPU access**, making the system feel **smooth and responsive**."
+        ],
+        "qText": "Why is Round Robin preferred in interactive systems?"
+    },
+    {
+        "qId": "sched092",
+        "answers": [
+            "Yes, **Round Robin (RR) can cause starvation**, but only in certain cases:\n\n1. **If the time slice is too short:**\n   - A process may **never get enough CPU time** to complete before being preempted.\n\n2. **If the system is overloaded:**\n   - If there are **too many processes**, it may take a long time for each process to get a turn.\n\n**Example:**\n- Suppose a process requires **100ms** to complete, but the time slice is only **1ms**.\n- The process may have to wait for **99 other processes** before getting CPU time again!"
+        ],
+        "qText": "Can Round Robin cause starvation?"
+    },
+    {
+        "qId": "sched093",
+        "answers": [
+            "Amortization helps reduce **context switching costs** in Round Robin by choosing an **appropriate time slice**.\n\n- If the time slice is **too short**, **context switches occur too frequently**, reducing CPU efficiency.\n- If the time slice is **too long**, it may lead to **poor response times**.\n\n**Amortization Strategy:**\n- A **moderate** time slice ensures that processes execute for a reasonable amount of time before switching, balancing **efficiency and fairness**."
+        ],
+        "qText": "How does amortization affect Round Robin scheduling?"
+    },
+    {
+        "qId": "sched094",
+        "answers": [
+            "Round Robin (RR) prevents **CPU monopolization** by ensuring that **no single process runs indefinitely**.\n\n- **Fixed time slices:** Each process gets a limited **quantum** of CPU time.\n- **Preemption:** Once a process **exceeds its time slice**, it is **moved to the end of the queue**.\n\n**Example:**\n- In **FCFS**, a long-running process can **block all others**.\n- In **RR**, every process gets a turn, preventing any single process from dominating the CPU."
+        ],
+        "qText": "How does Round Robin prevent CPU monopolization?"
+    },
+    {
+        "qId": "sched095",
+        "answers": [
+            "If a **process completes before its time slice expires**, the CPU **immediately switches** to the next process in the queue.\n\n- The OS does **not wait** for the full time slice to expire.\n- This improves **CPU efficiency** by preventing idle time.\n\n**Example:**\n- If a process only needs **3ms** but has a **5ms time slice**, it **terminates after 3ms**, and the scheduler picks the next process."
+        ],
+        "qText": "What happens in Round Robin if a process completes before its time slice ends?"
+    },
+    {
+        "qId": "sched096",
+        "answers": [
+            "**Context switching** in Round Robin occurs when the OS **saves the state** of the currently running process and **loads the state** of the next process in the queue.\n\n- It ensures that **each process gets CPU time fairly**.\n- The process state (registers, program counter, etc.) is stored and restored.\n\n**Example:**\n- If a time slice is **10ms**, and a process is preempted, the OS **stores its execution state** and moves to the next process."
+        ],
+        "qText": "What is context switching in Round Robin scheduling?"
+    },
+    {
+        "qId": "sched097",
+        "answers": [
+            "The length of the **time slice** directly impacts **context switching frequency**:\n\n1. **Small time slice:**\n   - Increases **context switching overhead**.\n   - Makes the system more **responsive** but reduces efficiency.\n\n2. **Large time slice:**\n   - Reduces **context switches**, improving CPU efficiency.\n   - May lead to **poor responsiveness** for interactive tasks.\n\n**Example:**\n- A time slice of **2ms** causes **frequent context switches**, while a **100ms slice** reduces switches but increases wait time."
+        ],
+        "qText": "How does time slice length impact context switching?"
+    },
+    {
+        "qId": "sched098",
+        "answers": [
+            "Yes, **Round Robin (RR) can be combined with priority scheduling** to create a **Priority Round Robin (PRR) algorithm**.\n\n- **High-priority processes** get CPU time more frequently.\n- Each priority level has its own **Round Robin queue**.\n- The OS **schedules high-priority queues first**, then moves to lower-priority processes.\n\n**Example:**\n- A real-time task (high priority) may get a time slice every **10ms**, while a background task (low priority) gets one every **50ms**."
+        ],
+        "qText": "Can Round Robin be combined with priority scheduling?"
+    },
+    {
+        "qId": "sched099",
+        "answers": [
+            "**Trade-off in Round Robin Scheduling:**\n\n**Advantage:**\n- **Improves response time** because all processes get CPU time quickly.\n- Ideal for **interactive systems** like multi-user environments.\n\n**Disadvantage:**\n- **Poor turnaround time** as jobs are repeatedly interrupted.\n- Long-running processes take longer to complete due to frequent preemptions.\n\n**Example:**\n- A **short task** in RR gets quick response, but a **long task** may take multiple cycles to complete, increasing overall delay."
+        ],
+        "qText": "What is the main trade-off of Round Robin scheduling?"
+    },
+    {
+        "qId": "sched100",
+        "answers": [
+            "**Modern operating systems use Round Robin (RR) because it ensures:**\n\n- **Fair CPU allocation:** Every process gets an equal opportunity.\n- **Low response time:** Essential for interactive applications.\n- **Prevents CPU monopolization:** Unlike FCFS, no single process can dominate CPU time.\n\n**Example:**\n- In **Linux and Windows**, RR is used for **time-sharing systems** to ensure **multiple applications** (e.g., web browsers, text editors) remain responsive."
+        ],
+        "qText": "Why is Round Robin widely used in modern operating systems?"
+    },
+    {
+        "qId": "q123",
+        "qText": "Explain round robin scheduling.",
+        "answers": [
+        "Round Robin (RR) is a **CPU scheduling algorithm** that assigns a **fixed time slice** (quantum) to each process and cycles through them in a circular manner.",
+        "**How it works:**",
+        "- Each process runs for a maximum of the time slice.",
+        "- If a process does not complete within its time slice, it is **preempted** and moved to the back of the queue.",
+        "- This ensures **fairness** and prevents starvation.",
+        "**Example:**",
+        "- Time slice: 5ms",
+        "- Processes: P1 (10ms), P2 (4ms), P3 (8ms)",
+        "- Execution order: P1 (5ms) → P2 (4ms) → P3 (5ms) → P1 (5ms) → P3 (3ms)",
+        "A **time slice** (also called **quantum**) in Round Robin scheduling is the **fixed amount of time** each process is allowed to run before being preempted.",
+        "- If a process **completes within the time slice**, it exits.",
+        "- If not, it is **moved to the end of the queue**, and the next process is scheduled.",
+        "**Example:**",
+        "- Time slice = 4ms",
+        "- P1 (Execution time: 10ms), P2 (Execution time: 6ms)",
+        "- Execution order: P1 (4ms) → P2 (4ms) → P1 (4ms) → P2 (2ms)",
+        "**Trade-off in Round Robin Scheduling:**",
+        "**Advantage:**",
+        "- **Improves response time** because all processes get CPU time quickly.",
+        "- Ideal for **interactive systems** like multi-user environments.",
+        "**Disadvantage:**",
+        "- **Poor turnaround time** as jobs are repeatedly interrupted.",
+        "- Long-running processes take longer to complete due to frequent preemptions."
+        ]
+    },
+    {
+        "qId": "q124",
+        "qText": "Explain round robin scheduling in brief.",
+        "answers": [
+        "Round Robin (RR) is a **CPU scheduling algorithm** that assigns a **fixed time slice** (quantum) to each process and cycles through them in a circular manner.",
+        "**How it works:**",
+        "- Each process runs for a maximum of the time slice.",
+        "- If a process does not complete within its time slice, it is **preempted** and moved to the back of the queue.",
+        "- This ensures **fairness** and prevents starvation.",
+        "**Example:**",
+        "- Time slice: 5ms",
+        "- Processes: P1 (10ms), P2 (4ms), P3 (8ms)",
+        "- Execution order: P1 (5ms) → P2 (4ms) → P3 (5ms) → P1 (5ms) → P3 (3ms)"
+        ]
+    },
+    {
+        "qId": "q125",
+        "qText": "Explain the purpose of fork() and wait() system calls.",
+        "answers": [
+        "The `fork()` system call in UNIX is used to create a new child process by duplicating the calling process. When a process calls `fork()`, the operating system creates a new process that is an exact copy of the parent, including memory, registers, and open file descriptors. The child process runs as an independent entity and does not share memory space with the parent.",
+        "After `fork()`, both the parent and child processes start execution from the same instruction. However, they can be distinguished by their return values from `fork()`. This allows them to execute different sections of code if necessary.",
+        "The `wait()` system call is used in UNIX-based systems to make a parent process wait until one of its child processes terminates. It ensures proper synchronization and prevents zombie processes."
+        ]
+    },
+    {
+        "qId": "q126",
+        "qText": "What did you eat today?",
+        "answers": [
+        "Ham"
+        ]
+    },
+    {
+        "qId": "q127",
+        "qText": "What is Information Retrieval?",
+        "answers": [
+        "Information retrieval is the process of retrieving information from a database using a standardized search and retrieval process."
+        ]
+    }
+]
+

@@ -21,6 +21,7 @@ import StudentQuizDashboard from './components/StudentQuizDashboard';
 import LecturerSubmissions from './components/AdminSubmissions';
 import AdminASubmissions from './components/AdminASubmissions';
 import PlagiarismDetector from './components/PlagiarismDetector';
+import Chatbot from './components/Chatbot' ;
 function App() {
   return (
     <AuthProvider>
@@ -47,7 +48,7 @@ function App() {
           <Route path="/quiz-dashboard" element={<StudentQuizDashboard />} />
           <Route path="/assignment-submissions" element={<AdminASubmissions />} />
           <Route path="/plagiarism-detection" element={<PlagiarismDetector />} />
-          
+          <Route path="/chatbot" element={<Chatbot />} />
         </Routes>
       </Router>
     </AuthProvider>
