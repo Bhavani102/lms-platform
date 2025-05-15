@@ -26,6 +26,19 @@ A full-featured web-based Learning Management System that provides a one-stop so
 ---
 ## ⚙️ Getting Started
 
+## ✅ Prerequisites
+
+Before running this project locally, ensure you have the following installed on your system:
+
+- **Node.js** (v14 or higher recommended): [Download Node.js](https://nodejs.org/)
+- **npm** (Node package manager, usually comes with Node.js)
+- **MongoDB** (local or cloud instance like MongoDB Atlas): [MongoDB Atlas Setup Guide](https://www.mongodb.com/cloud/atlas)
+- **Git** (optional, for cloning the repo): [Download Git](https://git-scm.com/)
+
+Also make sure:
+- You've created a `.env` file with valid values for `MONGO_URI` and `JWT_SECRET`.
+- Port `3000` (for frontend) and `5000` (or whichever port your backend runs on) are available.
+
 ### 📦 Clone the Repository
 1. Clone the repository to your local machine:
 
