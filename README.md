@@ -24,5 +24,61 @@ A full-featured web-based Learning Management System that provides a one-stop so
 - **Database**: MongoDB
 
 ---
+## ⚙️ Getting Started
 
+### 📦 Clone the Repository
+1. Clone the repository to your local machine:
 
+   ```bash
+   git clone https://github.com/Bhavani102/lms-platform.git
+
+## ⚙️ Project Setup
+
+This project is divided into two main parts: the **Frontend** (React) and the **Backend** (Node.js + Express + MongoDB). Follow the steps below to run the project locally.
+
+---
+
+### 📁 Backend Setup (`/server`)
+
+1. Navigate to the backend folder:
+
+   ```bash
+   cd server
+   
+2. Install backend dependencies:
+   
+   ```bash
+   npm install
+
+3. Create a `.env` file in the server directory and add the following:
+   ```env
+   MONGO_URI=your_mongodb_connection_string
+   JWT_SECRET=your_jwt_secret
+
+4. Start the backend server:
+
+   ```bash
+   npm start
+
+Backend will run on: http://localhost:5000
+
+### 💻 Frontend Setup (`/client`)
+
+1. Navigate to the frontend folder:
+
+  ```bash
+  cd ../client
+  ```
+
+2. Install frontend dependencies:
+
+  ```bash
+  npm install
+  ```
+
+3. Start the frontend React app:
+
+   ```bash
+   npm start
+
+Frontend will run on: http://localhost:3000
